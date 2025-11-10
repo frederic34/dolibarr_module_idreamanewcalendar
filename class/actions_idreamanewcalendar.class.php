@@ -1238,41 +1238,6 @@ class ActionsIDreamANewCalendar
 	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
 	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
 	 */
-	public function doMassActions($parameters, &$object, &$action, $hookmanager)
-	{
-		global $conf, $user, $langs;
-
-		$error = 0; // Error counter
-
-		/* print_r($parameters); print_r($object); echo "action: " . $action; */
-		if (in_array($parameters['currentcontext'], ['somecontext1', 'somecontext2'])) {
-			// do something only for the context 'somecontext1' or 'somecontext2'
-			foreach ($parameters['toselect'] as $objectid) {
-				// Do action on each object id
-			}
-		}
-
-		if (!$error) {
-			$this->results = [
-				'myreturn' => 999,
-			];
-			$this->resprints = 'A text to show';
-			return 0; // or return 1 to replace standard code
-		} else {
-			$this->errors[] = 'Error message';
-			return -1;
-		}
-	}
-
-	/**
-	 * Overloading the doActions function : replacing the parent's function with the one below
-	 *
-	 * @param   array           $parameters     Hook metadatas (context, etc...)
-	 * @param   CommonObject    $object         The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
-	 * @param   string          $action         Current action (if set). Generally create or edit or null
-	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
-	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
-	 */
 	public function printLeftBlock($parameters, &$object, &$action, $hookmanager)
 	{
 		global $conf, $user, $langs;

@@ -1023,9 +1023,9 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 						'editable' => false,
 						'allDay' => $fulldayevent,
 						// color : The schedule text color
-						'color' => isDarkColor($colorcal) ? '#ffffff' : '#000000',
+						'textColor' => isDarkColor($colorcal) ? '#ffffff' : '#000000',
 						// bgColor : The schedule background color
-						'bgColor' => '#' . $colorcal,
+						'backgroundColor' => '#' . $colorcal,
 						// borderColor : The schedule border color
 						'borderColor' => '#' . $colorcal,
 						// 'location' => $icalevent->location,
@@ -1036,6 +1036,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 			}
 		}
 	}
+
 	return $events;
 }
 
