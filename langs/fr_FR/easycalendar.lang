@@ -1,0 +1,54 @@
+# Copyright (C) 2019-2021   Frédéric FRANCE         <frederic.france.@free.fr>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ModuleIDreamANewCalendarName = IDreamANewCalendar
+ModuleIDreamANewCalendarDesc = Description de IDreamANewCalendar
+
+IDreamANewCalendarSetup = Configuration du module IDreamANewCalendar
+IDreamANewCalendarSettings = Réglages
+IDreamANewCalendarSetupPage = Page de configuration du module IDreamANewCalendar
+IDreamANewCalendarDontShowAutoEvents=Ne pas afficher les évènements insérés automatiquement
+IDREAMANEWCALENDAR_LIGTHNESS_SWAP=Valeur pour passer le texte de l'évènement du noir au blanc (défaut 150)
+IDreamANewCalendarAbout = À propos de IDreamANewCalendar
+IDreamANewCalendarAboutPage = Page à propos de IDreamANewCalendar
+
+
+IDreamANewCalendarUser=Utilisateur
+IDreamANewCalendarViewAgenda=Agenda
+IDreamANewCalendarFree=Disponible
+IDreamANewCalendarBusy=Occupé
+IDreamANewCalendarUpdate=Mettre à jour
+IDreamANewCalendarEdit=Editer
+IDreamANewCalendarDelete=Supprimer
+IDreamANewCalendarSave=Enregistrer
+IDreamANewCalendarSubject=Sujet
+IDreamANewCalendarLocation=Emplacement :
+IDreamANewCalendarBody=Contenu :
+IDreamANewCalendarAllDay=Journée
+IDreamANewCalendarDaily=Jour
+IDreamANewCalendarWeekly=Semaine
+IDreamANewCalendar2weeks=2 Semaines
+IDreamANewCalendar3weeks=3 Semaines
+IDreamANewCalendarMonthly=Mois
+IDreamANewCalendarShowweekends=Voir les weekends
+IDreamANewCalendarStartWeekOnMonday=La semaine commence le lundi
+IDreamANewCalendarNarrowerThanWeekdays=Réduire la largeur des weekends
+IDreamANewCalendarViewAll=Tous
+IDreamANewCalendarBirthdayEvents=Anniversaires
+IDreamANewCalendarExtSites=Calendriers Externes
+IDreamANewCalendarCacheTime=Durée du cache (sec)
+IDreamANewCalendarCacheTimeOnlyIfRequired=Indiquez le temps en secondes de mise en cache de la source, par défaut %s secondes si vide.
+MAIN_ENABLE_AJAX_TOOLTIP=Activer les tooltips ajax (nécéssite une version de Dolibar >= 18)
+CHECKLASTVERSION_EXTERNALMODULE=Forcer la vérification des versions des modules externes (déconseillé, cette option peux avoir été actvée par un autre module)

@@ -1,0 +1,47 @@
+/*
+ * Language code: es_ES
+ * Generation date 2022-06-17 13:40:51
+ */
+
+
+// START - Lines generated via autotranslator.php tool (2022-06-17 13:40:51).
+// Reference language: fr_FR -> es_ES
+ModuleIDreamANewCalendarName=IDreamANewCalendario
+ModuleIDreamANewCalendarDesc=Descripción de IDreamANewCalendar
+IDreamANewCalendarSetup=Configuración del módulo IDreamANewCalendar
+IDreamANewCalendarSettings=Ajustes
+IDreamANewCalendarSetupPage=Página de configuración del módulo IDreamANewCalendar
+IDreamANewCalendarDontShowAutoEvents=No mostrar eventos insertados automáticamente
+IDREAMANEWCALENDAR_LIGTHNESS_SWAP=Valor para cambiar el texto del evento de negro a blanco (predeterminado 150)
+About=A proposito
+IDreamANewCalendarAbout=Acerca de IDreamANewCalendar
+IDreamANewCalendarAboutPage=Página sobre IDreamANewCalendar
+MyWidget=Mi widget
+MyWidgetDescription=Descripción de mi widget
+IDreamANewCalendarUser=Usuario
+IDreamANewCalendarViewAgenda=Diario
+IDreamANewCalendarFree=Disponible
+IDreamANewCalendarBusy=Ocupado
+IDreamANewCalendarUpdate=Poner al día
+IDreamANewCalendarEdit=Editar
+IDreamANewCalendarDelete=Borrar
+IDreamANewCalendarSave=para registrarse
+IDreamANewCalendarSubject=Tema
+IDreamANewCalendarLocation=Ubicación :
+IDreamANewCalendarBody=Contenidos:
+IDreamANewCalendarAllDay=Tiempo de día
+IDreamANewCalendarDaily=Día
+IDreamANewCalendarWeekly=Semana
+IDreamANewCalendar2weeks=2 semanas
+IDreamANewCalendar3weeks=3 semanas
+IDreamANewCalendarMonthly=Mes
+IDreamANewCalendarShowweekends=Ver fines de semana
+IDreamANewCalendarStartWeekOnMonday=la semana empieza el lunes
+IDreamANewCalendarNarrowerThanWeekdays=Reducir el ancho de los fines de semana
+IDreamANewCalendarViewAll=Todos
+IDreamANewCalendarBirthdayEvents=cumpleaños
+IDreamANewCalendarExtSites=Calendarios externos
+IDreamANewCalendarCacheTime=Duración de caché (seg)
+IDreamANewCalendarCacheTimeOnlyIfRequired=Especifique el tiempo de almacenamiento en caché de origen en segundos, %s segundos predeterminados si está vacío.
+MAIN_ENABLE_AJAX_TOOLTIP=Habilite la información sobre herramientas de ajax (requiere la versión de Dolibar&gt; = 18)
+CHECKLASTVERSION_EXTERNALMODULE=Forzar verificación de versiones de módulos externos (no recomendado, esta opción puede haber sido activada por otro módulo)

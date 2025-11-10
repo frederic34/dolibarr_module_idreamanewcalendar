@@ -1,0 +1,45 @@
+/*
+ * Language code: de_DE
+ * Generation date 2022-06-17 13:41:30
+ */
+
+
+// START - Lines generated via autotranslator.php tool (2022-06-17 13:41:30).
+// Reference language: fr_FR -> de_DE
+ModuleIDreamANewCalendarName=TuiKalender
+ModuleIDreamANewCalendarDesc=Beschreibung von IDreamANewCalendar
+IDreamANewCalendarSetup=Konfigurieren des IDreamANewCalendar-Moduls
+IDreamANewCalendarSettings=Einstellungen
+IDreamANewCalendarSetupPage=Konfigurationsseite des IDreamANewCalendar-Moduls
+IDreamANewCalendarDontShowAutoEvents=Automatisch eingefügte Ereignisse nicht anzeigen
+IDREAMANEWCALENDAR_LIGTHNESS_SWAP=Wert zum Ändern des Ereignistextes von schwarz auf weiß (Standard 150)
+About=Um
+IDreamANewCalendarAbout=Über IDreamANewCalendar
+IDreamANewCalendarAboutPage=Seite über IDreamANewCalendar
+IDreamANewCalendarUser=Benutzer
+IDreamANewCalendarViewAgenda=Tagebuch
+IDreamANewCalendarFree=Verfügbar
+IDreamANewCalendarBusy=Belebt
+IDreamANewCalendarUpdate=Aktualisieren
+IDreamANewCalendarEdit=Bearbeiten
+IDreamANewCalendarDelete=Löschen
+IDreamANewCalendarSave=Zur Anmeldung
+IDreamANewCalendarSubject=Thema
+IDreamANewCalendarLocation=Ort :
+IDreamANewCalendarBody=Inhalt :
+IDreamANewCalendarAllDay=Tageszeit
+IDreamANewCalendarDaily=Tag
+IDreamANewCalendarWeekly=Woche
+IDreamANewCalendar2weeks=2 Wochen
+IDreamANewCalendar3weeks=Drei Wochen
+IDreamANewCalendarMonthly=Monat
+IDreamANewCalendarShowweekends=Siehe Wochenenden
+IDreamANewCalendarStartWeekOnMonday=Die Woche beginnt am Montag
+IDreamANewCalendarNarrowerThanWeekdays=Reduzieren Sie die Breite der Wochenenden
+IDreamANewCalendarViewAll=Alle
+IDreamANewCalendarBirthdayEvents=Geburtstage
+IDreamANewCalendarExtSites=Externe Kalender
+IDreamANewCalendarCacheTime=Cache-Dauer (Sek.)
+IDreamANewCalendarCacheTimeOnlyIfRequired=Geben Sie die Quell-Caching-Zeit in Sekunden an, standardmäßige %s-Sekunden, wenn leer.
+MAIN_ENABLE_AJAX_TOOLTIP=Ajax-Tooltips aktivieren (erfordert Dolibar-Version &gt;= 18)
+CHECKLASTVERSION_EXTERNALMODULE=Erzwingen der Überprüfung externer Modulversionen (nicht empfohlen, diese Option wurde möglicherweise von einem anderen Modul aktiviert)

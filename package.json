@@ -1,0 +1,14 @@
+{
+  "name": "idreamanewcalendar",
+  "changelog": {
+    "repo": "frederic34/dolibarr_module_idreamanewcalendar",
+    "labels": {
+      "nextVersion": "Unreleased",
+      "breaking": ":boom: Breaking Change",
+      "enhancement": ":rocket: Enhancement",
+      "bug": ":bug: Bug Fix",
+      "documentation": ":memo: Documentation",
+      "internal": ":house: Internal"
+    }
+  }
+}

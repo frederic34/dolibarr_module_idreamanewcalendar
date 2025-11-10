@@ -1,0 +1,87 @@
+# Copyright (C) 2019-2021  Frédéric FRANCE <frederic.france@free.fr>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+# Generic
+#
+
+# Module label 'ModuleIDreamANewCalendarName'
+ModuleIDreamANewCalendarName = IDreamANewCalendar
+# Module description 'ModuleIDreamANewCalendarDesc'
+ModuleIDreamANewCalendarDesc = IDreamANewCalendar description
+
+#
+# Admin page
+#
+IDreamANewCalendarSetup = IDreamANewCalendar setup
+Settings = Settings
+IDreamANewCalendarSetupPage = IDreamANewCalendar setup page
+IDREAMANEWCALENDAR_MYPARAM1 = My param 1
+IDREAMANEWCALENDAR_MYPARAM1Tooltip = My param 1 tooltip
+IDREAMANEWCALENDAR_MYPARAM2=My param 2
+IDREAMANEWCALENDAR_MYPARAM2Tooltip=My param 2 tooltip
+
+
+#
+# About page
+#
+About = About
+IDreamANewCalendarAbout = About IDreamANewCalendar
+IDreamANewCalendarAboutPage = IDreamANewCalendar about page
+
+#
+# Sample page
+#
+MyPageName = My page name
+
+#
+# Sample widget
+#
+MyWidget = My widget
+MyWidgetDescription = My widget description
+
+
+// START - Lines generated via autotranslator.php tool (2022-06-17 13:40:35).
+// Reference language: fr_FR -> en_US
+IDreamANewCalendarSettings=Settings
+IDreamANewCalendarDontShowAutoEvents=Do not display automatically inserted events
+IDREAMANEWCALENDAR_LIGTHNESS_SWAP=Value to change the event text from black to white (default 150)
+IDreamANewCalendarUser=User
+IDreamANewCalendarViewAgenda=Diary
+IDreamANewCalendarFree=Available
+IDreamANewCalendarBusy=Busy
+IDreamANewCalendarUpdate=Update
+IDreamANewCalendarEdit=Edit
+IDreamANewCalendarDelete=To delete
+IDreamANewCalendarSave=To register
+IDreamANewCalendarSubject=Topic
+IDreamANewCalendarLocation=Location :
+IDreamANewCalendarBody=Contents :
+IDreamANewCalendarAllDay=Daytime
+IDreamANewCalendarDaily=Day
+IDreamANewCalendarWeekly=Week
+IDreamANewCalendar2weeks=2 weeks
+IDreamANewCalendar3weeks=Three weeks
+IDreamANewCalendarMonthly=Month
+IDreamANewCalendarShowweekends=See weekends
+IDreamANewCalendarStartWeekOnMonday=The week starts on Monday
+IDreamANewCalendarNarrowerThanWeekdays=Reduce width of weekends
+IDreamANewCalendarViewAll=All
+IDreamANewCalendarBirthdayEvents=Birthdays
+IDreamANewCalendarExtSites=External Calendars
+IDreamANewCalendarCacheTime=Cache Duration (sec)
+IDreamANewCalendarCacheTimeOnlyIfRequired=Specify source caching time in seconds, default %s seconds if empty.
+MAIN_ENABLE_AJAX_TOOLTIP=Enable ajax tooltips (requires Dolibar version &gt;= 18)
+CHECKLASTVERSION_EXTERNALMODULE=Force checking of external module versions (not recommended, this option may have been activated by another module)

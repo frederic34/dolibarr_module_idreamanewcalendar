@@ -1,0 +1,6 @@
+# Generated binaries
+/build/htdocs
+/.settings/
+/.buildpath
+/.project
+/lib/ics-parser/*
