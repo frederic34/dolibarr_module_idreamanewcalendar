@@ -766,9 +766,9 @@ class ActionsIDreamANewCalendar
 									dataType: 'json',
 									data: {
 										start: fetchInfo.start.getTime(),
-										startStr: fetchInfo.startStr,
+										// startStr: fetchInfo.startStr,
 										end: fetchInfo.end.getTime(),
-										endStr: fetchInfo.endStr,
+										// endStr: fetchInfo.endStr,
 										action: 'getevents',
 										resourceId: 1,
 										token: token
@@ -784,13 +784,13 @@ class ActionsIDreamANewCalendar
 							events: function(fetchInfo, successCallback, failureCallback) {
 								$.ajax({
 									method: 'GET',
-									url: '/core/ajax/events_ajax.php',
+									url: '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>',
 									dataType: 'json',
 									data: {
 										start: fetchInfo.start.getTime(),
-										startStr: fetchInfo.startStr,
+										// startStr: fetchInfo.startStr,
 										end: fetchInfo.end.getTime(),
-										endStr: fetchInfo.endStr,
+										// endStr: fetchInfo.endStr,
 										action: 'getevents',
 										resourceId: 2,
 										token: token

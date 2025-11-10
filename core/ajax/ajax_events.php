@@ -839,7 +839,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 	}
 	$listofextcals = [];
 	if ($resourceId > 2) {
-		$MAXAGENDA = getDolGlobalInt('AGENDA_EXT_NB', 5);
+		$MAXAGENDA = getDolGlobalInt('AGENDA_EXT_NB', 6);
 		// Define list of external calendars (global admin setup)
 		if (!getDolGlobalInt('AGENDA_DISABLE_EXT')) {
 			$i = 0;
@@ -902,12 +902,14 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 	//
 	// Complete $eventarray with external import Ical
 	if (count($listofextcals)) {
-		$firstdaytoshow = $startDate;
-		$lastdaytoshow = $endDate;
+		$firstdaytoshow = $startDate / 1000;
+		$lastdaytoshow = $endDate / 1000;
 
 		// require_once DOL_DOCUMENT_ROOT . '/comm/action/class/ical.class.php';
 		// cache des fichiers ics
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+		dol_include_once('/idreamanewcalendar/lib/ics-parser/src/ICal/ICal.php');
+		dol_include_once('/idreamanewcalendar/lib/ics-parser/src/ICal/Event.php');
 		// cette valeur peut se trouver dans le ical source, mais pas toujours
 		$cachetime = 7200;   // 7200 : 120mn
 		$cachedir = DOL_DATA_ROOT . '/agenda/temp';
@@ -928,7 +930,6 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 			}
 			$filename = '/ical-e' . $conf->entity . '-' . $fileid;
 			$refresh = dol_cache_refresh($cachedir, $filename, (int) $cachetime);
-			// dol_include_once('/prune/vendor/autoload.php');
 			// on cache le fichier si besoin
 			if ($refresh) {
 				try {
@@ -967,7 +968,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 
 			// Loop on each entry into cal file to know if entry is qualified and add an ActionComm into $eventarray
 			foreach ($icalevents as $icalevent) {
-				//print '<pre>' . print_r($icalevent, true)  . '</pre>';
+				// print '<pre>' . print_r($icalevent, true)  . '</pre>';
 				$fulldayevent = false;
 				if (isset($icalevent->dtstart_array[0]['VALUE']) && $icalevent->dtstart_array[0]['VALUE'] == 'DATE') {
 					$fulldayevent = true;
@@ -991,7 +992,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 
 				// Add event into $events if date range are ok.
 				if ($date_end_in_calendar < $firstdaytoshow || $date_start_in_calendar >= $lastdaytoshow) {
-					//print '<pre>' . print_r($icalevent, true)  . '</pre>';
+					// print '<pre>' . print_r($icalevent, true)  . '</pre>';
 					//print '<pre>' . $icalevent->printData()  . '</pre>';
 					//print 'x'.$datestart.'-'.$dateend;exit;
 					//print 'x'.$datestart.'-'.$dateend;exit;
@@ -1027,9 +1028,9 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 						'bgColor' => '#' . $colorcal,
 						// borderColor : The schedule border color
 						'borderColor' => '#' . $colorcal,
-						'location' => $icalevent->location,
+						// 'location' => $icalevent->location,
 						// raw : The user data
-						'raw' => new stdClass(),
+						// 'raw' => new stdClass(),
 					];
 				}
 			}
