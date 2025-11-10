@@ -1,4 +1,4 @@
-# IDREAMANEWCALENDAR FOR <a href="https://www.dolibarr.org">DOLIBARR ERP CRM</a>
+# I DREAM A NEW CALENDAR FOR <a href="https://www.dolibarr.org">DOLIBARR ERP CRM</a>
 
 ## Features
 Description...
@@ -53,12 +53,6 @@ Note: If this screen tell you there is no custom directory, check your setup is 
         $dolibarr_main_document_root_alt = '/var/www/Dolibarr/htdocs/custom';
         ```
 
-    - Windows:
-        ```php
-        $dolibarr_main_url_root_alt = '/custom';
-        $dolibarr_main_document_root_alt = 'C:/My Web Sites/Dolibarr/htdocs/custom';
-        ```
-        
 ### From a GIT repository
 
 - Clone the repository in ```$dolibarr_main_document_root_alt/idreamanewcalendar```
