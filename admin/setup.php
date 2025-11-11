@@ -51,6 +51,7 @@ $arrayofparameters = [
 
 // Paramètres ON/OFF est rajouté au paramètre
 $modules = [
+	'AGENDA_ALL_CALENDARS' => 'AGENDA_ALL_CALENDARS',
 	'MAIN_STORE_FULL_EVENT_IN_GMT' => 'MAIN_STORE_FULL_EVENT_IN_GMT',
 	'IDREAMANEWCALENDAR_DONT_SHOW_AUTO_EVENTS' => 'IDreamANewCalendarDontShowAutoEvents',
 	// tweak dolibarr
