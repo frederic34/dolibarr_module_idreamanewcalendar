@@ -158,7 +158,7 @@ switch ($action) {
 		}
 		break;
 	case 'deleteevent':
-		//dol_syslog('posted events ajax REQUEST '.print_r($_POST, true), LOG_NOTICE);
+		// dol_syslog('posted events ajax REQUEST '.print_r($_POST, true), LOG_NOTICE);
 		if (GETPOSTISSET('schedule')) {
 			//$deletedevent = json_decode(GETPOST('schedule'), 'none');
 			$deletedevent = json_decode($_POST['schedule']);
@@ -470,7 +470,7 @@ switch ($action) {
 						'calendarId' => md5(getDolGlobalString($name)),
 						'offsettz' => getDolGlobalInt($offsettz),
 						'color' => getDolGlobalString($color),
-						'buggedfile' => (isset($conf->global->buggedfile) ? $conf->global->buggedfile : 0),
+						'buggedfile' => getDolGlobalInt($buggedfile),
 					];
 				}
 			}
@@ -489,12 +489,12 @@ switch ($action) {
 				if (getDolUserString($source) && getDolUserString($name)) {
 					// Note: $conf->global->buggedfile can be empty or 'uselocalandtznodaylight' or 'uselocalandtzdaylight'
 					$listofextcals[] = [
-						'src' => $user->conf->$source,
+						'src' => getDolUserString($source),
 						'name' => getDolUserString($name),
 						'calendarId' => md5(getDolUserString($name)),
 						'offsettz' => getDolUserInt($offsettz),
-						'color' => $user->conf->$color,
-						'buggedfile' => (isset($user->conf->buggedfile) ? $user->conf->buggedfile : 0),
+						'color' => getDolUserString($color),
+						'buggedfile' => getDolUserInt($buggedfile),
 					];
 				}
 			}
