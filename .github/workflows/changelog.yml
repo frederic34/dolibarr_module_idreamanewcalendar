@@ -28,7 +28,7 @@ jobs:
         id: setup-php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.2'
           tools: php-parallel-lint/php-var-dump-check, parallel-lint, cs2pr, phpcs
       - uses: actions/setup-node@v3
         with:
