@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ModuleIDreamANewCalendarName = IDreamANewCalendar
-ModuleIDreamANewCalendarDesc = Description de IDreamANewCalendar
+ModuleIDreamANewCalendarDesc = Un calendrier rapide avec drag-and-drop et rafraichissement auto
 
 IDreamANewCalendarSetup = Configuration du module IDreamANewCalendar
 IDreamANewCalendarSettings = Réglages

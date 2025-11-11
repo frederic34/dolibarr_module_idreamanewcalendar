@@ -40,6 +40,7 @@ jobs:
         run: |
           php ./.tx/autotranslator.php fr_FR it_IT ${{ secrets.GOOGLE_API_TRANSLATE }}
           php ./.tx/autotranslator.php fr_FR en_US ${{ secrets.GOOGLE_API_TRANSLATE }}
+          php ./.tx/autotranslator.php fr_FR uk_UA ${{ secrets.GOOGLE_API_TRANSLATE }}
           php ./.tx/autotranslator.php fr_FR es_ES ${{ secrets.GOOGLE_API_TRANSLATE }}
           php ./.tx/autotranslator.php fr_FR de_DE ${{ secrets.GOOGLE_API_TRANSLATE }}
       - name: Run changelog
