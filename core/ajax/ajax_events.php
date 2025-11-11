@@ -158,7 +158,7 @@ switch ($action) {
 		}
 		break;
 	case 'deleteevent':
-		//dol_syslog('posted events ajax REQUEST '.print_r($_POST, true), LOG_NOTICE);
+		// dol_syslog('posted events ajax REQUEST '.print_r($_POST, true), LOG_NOTICE);
 		if (GETPOSTISSET('schedule')) {
 			//$deletedevent = json_decode(GETPOST('schedule'), 'none');
 			$deletedevent = json_decode($_POST['schedule']);
@@ -470,7 +470,7 @@ switch ($action) {
 						'calendarId' => md5(getDolGlobalString($name)),
 						'offsettz' => getDolGlobalInt($offsettz),
 						'color' => getDolGlobalString($color),
-						'buggedfile' => (isset($conf->global->buggedfile) ? $conf->global->buggedfile : 0),
+						'buggedfile' => getDolGlobalInt($buggedfile),
 					];
 				}
 			}
@@ -489,12 +489,12 @@ switch ($action) {
 				if (getDolUserString($source) && getDolUserString($name)) {
 					// Note: $conf->global->buggedfile can be empty or 'uselocalandtznodaylight' or 'uselocalandtzdaylight'
 					$listofextcals[] = [
-						'src' => $user->conf->$source,
+						'src' => getDolUserString($source),
 						'name' => getDolUserString($name),
 						'calendarId' => md5(getDolUserString($name)),
 						'offsettz' => getDolUserInt($offsettz),
-						'color' => $user->conf->$color,
-						'buggedfile' => (isset($user->conf->buggedfile) ? $user->conf->buggedfile : 0),
+						'color' => getDolUserString($color),
+						'buggedfile' => getDolUserInt($buggedfile),
 					];
 				}
 			}
@@ -800,8 +800,8 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 		$sql .= ' AND (MONTH(birthday) = ' . date("m", $startDate / 1000);
 		$sql .= ' OR MONTH(birthday) = "12"';
 		$sql .= ' OR MONTH(birthday) = ' . date("m", $endDate / 1000) . ')';
-		//$sql.= ' AND DAY(birthday) >= '.date("d", strtotime($startDate));
-		//$sql.= ' AND DAY(birthday) <= '.date("d", strtotime($endDate));
+		// $sql.= ' AND DAY(birthday) >= '.date("d", strtotime($startDate));
+		// $sql.= ' AND DAY(birthday) <= '.date("d", strtotime($endDate));
 		$sql .= ' ORDER BY birthday';
 
 		$resql = $db->query($sql);
@@ -832,8 +832,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 				'backgroundColor' => '#555555',
 				// borderColor : The schedule border color
 				'borderColor' => '#891919ff',
-				// raw : The user data
-				// 'raw' => $raw,
+				'extendedProps' => [],
 			];
 		}
 	}
@@ -890,7 +889,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 							'calendarId' => md5(getDolUserString($name)),
 							'src' => getDolUserString($source),
 							'name' => getDolUserString($name),
-							'offsettz' => empty($user->conf->$offsettz) ? 0 : $user->conf->$offsettz,
+							'offsettz' => getDolUserInt($offsettz),
 							'color' => getDolUserString($color),
 							//'buggedfile' => (isset($user->conf->buggedfile) ? $user->conf->buggedfile : 0),
 						];
@@ -906,7 +905,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 		$lastdaytoshow = $endDate / 1000;
 
 		// require_once DOL_DOCUMENT_ROOT . '/comm/action/class/ical.class.php';
-		// cache des fichiers ics
+		// caching ics files
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 		dol_include_once('/idreamanewcalendar/lib/ics-parser/src/ICal/ICal.php');
 		dol_include_once('/idreamanewcalendar/lib/ics-parser/src/ICal/Event.php');
@@ -1015,8 +1014,6 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 						'title' => html_entity_decode($icalevent->summary),
 						// body : The schedule body text which is text/plain
 						'body' => nl2br($icalevent->description),
-						// 'start' => dol_print_date($date_start_in_calendar, "%Y-%m-%dT%H:%M:%S").'+03:00',
-						// 'end' => dol_print_date($date_end_in_calendar, "%Y-%m-%dT%H:%M:%S").'+03:00',
 						'start' => $dtstart->format('Y-m-d H:i:sP'),
 						'end' => $dtend->format('Y-m-d H:i:sP'),
 						// icals are readonly
@@ -1028,9 +1025,9 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 						'backgroundColor' => '#' . $colorcal,
 						// borderColor : The schedule border color
 						'borderColor' => '#' . $colorcal,
-						// 'location' => $icalevent->location,
-						// raw : The user data
-						// 'raw' => new stdClass(),
+						'extendedProps' => [
+							'location' => $icalevent->location,
+						],
 					];
 				}
 			}

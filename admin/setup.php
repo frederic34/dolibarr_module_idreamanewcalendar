@@ -51,21 +51,12 @@ $arrayofparameters = [
 
 // Paramètres ON/OFF est rajouté au paramètre
 $modules = [
+	'AGENDA_ALL_CALENDARS' => 'AGENDA_ALL_CALENDARS',
 	'MAIN_STORE_FULL_EVENT_IN_GMT' => 'MAIN_STORE_FULL_EVENT_IN_GMT',
 	'IDREAMANEWCALENDAR_DONT_SHOW_AUTO_EVENTS' => 'IDreamANewCalendarDontShowAutoEvents',
 	// tweak dolibarr
 	'CHECKLASTVERSION_EXTERNALMODULE' => 'CHECKLASTVERSION_EXTERNALMODULE',
 ];
-if ((int) DOL_VERSION > 17) {
-	// tweak dolibarr
-	$modules = array_merge(
-		$modules,
-		[
-			'MAIN_ENABLE_AJAX_TOOLTIP' => 'MAIN_ENABLE_AJAX_TOOLTIP',
-		]
-	);
-}
-
 
 
 /*
