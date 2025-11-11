@@ -45,3 +45,4 @@ IDreamANewCalendarCacheTime=Durata cache (sec)
 IDreamANewCalendarCacheTimeOnlyIfRequired=Specificare il tempo di memorizzazione nella cache di origine in secondi, secondi %s predefiniti se vuoto.
 MAIN_ENABLE_AJAX_TOOLTIP=Abilita i suggerimenti ajax (richiede la versione Dolibar &gt;= 18)
 CHECKLASTVERSION_EXTERNALMODULE=Forza il controllo delle versioni dei moduli esterni (non consigliato, questa opzione potrebbe essere stata attivata da un altro modulo)
+MAIN_STORE_FULL_EVENT_IN_GMT=Registra gli eventi per un giorno in formato GMT (non retroattivo per gli eventi già registrati)
