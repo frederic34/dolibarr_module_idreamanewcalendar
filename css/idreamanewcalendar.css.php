@@ -1,5 +1,5 @@
 <?php
-/* Copyright ©  2019-2021 Frédéric FRANCE     <frederic.france@free.fr>
+/* Copyright ©  2019-2025 Frédéric FRANCE     <frederic.france@free.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,27 +98,6 @@ header('Cache-Control: max-age=10800, public, must-revalidate');
   background-color: #fff;
 }
 
-<!-- .dropdown-menu {
-  top: 25px;
-  padding: 3px 0;
-  border-radius: 2px;
-  border: 1px solid #bbb;
-}
-
-.dropdown-menu > li > a {
-  padding: 9px 12px;
-  cursor: pointer;
-}
-
-.dropdown-menu > li > a:hover {
-  background-color: rgba(81, 92, 230, 0.05);
-  color: #333;
-} -->
-
-<!-- .bi15 {
-  width: 15px;
-  height: 15px;
-} -->
 /** custom fontawesome - end */
 
 .calendar-icon {
@@ -340,61 +319,4 @@ header('Cache-Control: max-age=10800, public, must-revalidate');
   background: url('../img/img-bi.png') no-repeat;
   width: 215px;
   height: 16px;
-}
-
-.ic_view_month {
-  background: url('../img/ic-view-month.png') no-repeat;
-}
-
-.ic_view_week {
-  background: url('../img/ic-view-week.png') no-repeat;
-}
-
-.ic_view_day {
-  background: url('../img/ic-view-day.png') no-repeat;
-}
-
-.ic-arrow-cancel {
-  background: url('../img/ic-arrow-cancel.png') no-repeat;
-}
-
-.ic-arrow-line-left {
-  background: url('../img/ic-arrow-line-left.png') no-repeat;
-}
-
-.ic-arrow-line-right {
-  background: url('../img/ic-arrow-line-right.png') no-repeat;
-}
-
-.ic-travel-time {
-  background: url('../img/ic-traveltime-w.png') no-repeat;
-}
-
-/* font icons */
-.ic-location-b:before {
-  content: '\e900';
-}
-
-.ic-lock-b:before {
-  content: '\e901';
-}
-
-.ic-milestone-b:before {
-  content: '\e902';
-}
-
-.ic-readonly-b:before {
-  content: '\e903';
-}
-
-.ic-repeat-b:before {
-  content: '\e904';
-}
-
-.ic-state-b:before {
-  content: '\e905';
-}
-
-.ic-user-b:before {
-  content: '\e906';
 }
