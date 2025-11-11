@@ -33,6 +33,13 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 dol_include_once('/idreamanewcalendar/lib/idreamanewcalendar.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+/**
+ * @var Conf $conf
+ * @var DoliDB $db
+ * @var HookManager $hookmanager
+ * @var Translate $langs
+ * @var User $user
+ */
 
 if (!$user->admin) {
 	accessforbidden();
@@ -45,7 +52,7 @@ $def = [];
 $actiontest = GETPOST('test', 'alpha');
 $actionsave = GETPOST('save', 'alpha');
 
-$MAXAGENDA = $conf->global->AGENDA_EXT_NB ?? 5;
+$MAXAGENDA = getDolGlobalString('AGENDA_EXT_NB', 6);
 
 // List of available colors
 $colorlist = ['BECEDD', 'DDBECE', 'BFDDBE', 'F598B4', 'F68654', 'CBF654', 'A4A4A5'];
@@ -157,7 +164,7 @@ print dol_get_fiche_head($head, 'extsites', $langs->trans("Agenda"), -1, 'action
 print '<span class="opacitymedium">' . $langs->trans("AgendaExtSitesDesc") . "</span><br>\n";
 print "<br>\n";
 
-print "<table class=\"noborder\" width=\"100%\">";
+print "<table class=\"noborder centpercent\">";
 
 print "<tr class=\"liste_titre\">";
 print '<td>' . $langs->trans("Parameter") . "</td>";
@@ -193,15 +200,17 @@ print '</tr>';
 print "</table>";
 print "<br>";
 
-print '<table class="noborder" width="100%">';
+print '<div class="div-table-responsive">';
+print '<table class="noborder centpercent">' . "\n";
 
 print "<tr class=\"liste_titre\">";
 print "<td>" . $langs->trans("Parameter") . "</td>";
 print "<td>" . $langs->trans("Name") . "</td>";
 print "<td>" . $langs->trans("ExtSiteUrlAgenda") . " (" . $langs->trans("Example") . ': http://yoursite/agenda/agenda.ics)</td>';
-print '<td class="nowrap">' . $form->textwithpicto($langs->trans("FixTZ"), $langs->trans("FillFixTZOnlyIfRequired"), 1) . '</td>';
+print '<td>' . $form->textwithpicto($langs->trans("FixTZ"), $langs->trans("FillFixTZOnlyIfRequired"), 1) . '</td>';
 print '<td class="nowrap">' . $form->textwithpicto($langs->trans("IDreamANewCalendarCacheTime"), $langs->trans("IDreamANewCalendarCacheTimeOnlyIfRequired", 3600), 1) . '</td>';
 print '<td class="right">' . $langs->trans("Color") . '</td>';
+print '<td class="right">' . $langs->trans("ActiveByDefault") . '</td>';
 print "</tr>";
 
 $i = 1;
@@ -213,6 +222,7 @@ while ($i <= $MAXAGENDA) {
 	$color = 'AGENDA_EXT_COLOR' . $key;
 	$enabled = 'AGENDA_EXT_ENABLED' . $key;
 	$cache = 'AGENDA_EXT_CACHE' . $key;
+	$default = 'AGENDA_EXT_ACTIVEBYDEFAULT' . $key;
 
 	print '<tr class="oddeven">';
 	// Nb
@@ -220,21 +230,34 @@ while ($i <= $MAXAGENDA) {
 	// Name
 	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_NAME' . $key . '" value="' . (GETPOST('AGENDA_EXT_NAME' . $key) ? GETPOST('AGENDA_EXT_NAME' . $key, 'alpha') : ($conf->global->$name ?? '')) . '" size="25"></td>';
 	// URL
-	print '<td><input type="url" class="flat hideifnotset" name="AGENDA_EXT_SRC' . $key . '" value="' . (GETPOST('AGENDA_EXT_SRC' . $key) ? GETPOST('AGENDA_EXT_SRC' . $key, 'alpha') : ($conf->global->$src ?? '')) . '" size="110"></td>';
+	print '<td><input type="url" class="flat hideifnotset" name="AGENDA_EXT_SRC' . $key . '" value="' . (GETPOST('AGENDA_EXT_SRC' . $key) ? GETPOST('AGENDA_EXT_SRC' . $key, 'alpha') : ($conf->global->$src ?? '')) . '" size="80"></td>';
 	// Offset TZ
 	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_OFFSETTZ' . $key . '" value="' . (GETPOST('AGENDA_EXT_OFFSETTZ' . $key) ? GETPOST('AGENDA_EXT_OFFSETTZ' . $key) : ($conf->global->$offsettz ?? '')) . '" size="4"></td>';
 	// Cache time
 	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_CACHE' . $key . '" value="' . (GETPOST('AGENDA_EXT_CACHE' . $key) ? GETPOST('AGENDA_EXT_CACHE' . $key) : ($conf->global->$cache ?? '')) . '" size="10"></td>';
 	// Color (Possible colors are limited by Google)
-	print '<td class="nowrap right">';
-	//print $formadmin->selectColor($conf->global->$color, "google_agenda_color".$key, $colorlist);
+	print '<td class="nowraponall right">';
 	print $formother->selectColor((GETPOST("AGENDA_EXT_COLOR" . $key) ? GETPOST("AGENDA_EXT_COLOR" . $key) : ($conf->global->$color ?? '')), "AGENDA_EXT_COLOR" . $key, 'extsitesconfig', 1, '', 'hideifnotset');
+	print '</td>';
+	// Calendar active by default
+	print '<td class="nowrap right">';
+	if (!empty($conf->use_javascript_ajax)) {
+		print ajax_constantonoff('AGENDA_EXT_ACTIVEBYDEFAULT' . $key);
+	} else {
+		// @phan-suppress-next-line PhanPluginSuspiciousParamPosition
+		if (getDolGlobalString($default)) {
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=del_AGENDA_EXT_ACTIVEBYDEFAULT' . $key . '&token=' . newToken() . '">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
+		} else {
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=set_AGENDA_EXT_ACTIVEBYDEFAULT' . $key . '&token=' . newToken() . '">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
+		}
+	}
 	print '</td>';
 	print "</tr>";
 	$i++;
 }
 
 print '</table>';
+print '</div>';
 
 print dol_get_fiche_end();
 
