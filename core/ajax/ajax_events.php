@@ -316,7 +316,7 @@ switch ($action) {
 	case 'getdolusers':
 		$response = [];
 		$filterkey = GETPOST('q', 'alphanohtml');
-		$noactive = GETPOSTINT('noactive');;
+		$noactive = GETPOSTINT('noactive');
 		$force_entity = GETPOSTINT('force_entity');
 		$limit = 100;
 

@@ -666,7 +666,7 @@ class ActionsIDreamANewCalendar
 			</div>';
 			// CALENDAR
 			print '<div id="ec" style="height: 800px;"></div>';
-?>
+			?>
 			<style type="text/css">
 				.row {
 					display: flex;
@@ -908,8 +908,7 @@ class ActionsIDreamANewCalendar
 					}
 				});
 			</script>
-<?php
-
+			<?php
 			//print dol_get_fiche_end();
 			// End of page
 			llxFooter();
