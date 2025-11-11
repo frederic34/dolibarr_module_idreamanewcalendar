@@ -74,7 +74,7 @@ if ($user->socid > 0) {
 $feature2 = (($socid && $user->hasRight('user', 'self', 'creer')) ? '' : 'user');
 
 // Initialize a technical object to manage hooks of page. Note that conf->hooks_modules contains an array of hook context
-$hookmanager->initHooks(array('usercard', 'useragenda', 'globalcard'));
+$hookmanager->initHooks(['usercard', 'useragenda', 'globalcard']);
 
 $result = restrictedArea($user, 'user', $id, 'user&user', $feature2);
 
