@@ -161,8 +161,8 @@ $formother = new FormOther($db);
 $arrayofjs = [];
 $arrayofcss = [];
 
-$person_name = !empty($object->firstname) ? $object->lastname.", ".$object->firstname : $object->lastname;
-$title = $person_name." - ".$langs->trans('ExtSites');
+$person_name = !empty($object->firstname) ? $object->lastname . ", " . $object->firstname : $object->lastname;
+$title = $person_name . " - " . $langs->trans('ExtSites');
 $help_url = '';
 
 llxHeader('', $langs->trans("UserSetup"), '', '', 0, 0, $arrayofjs, $arrayofcss);
@@ -182,12 +182,12 @@ if ($user->rights->user->user->lire || $user->admin) {
 	$linkback = '<a href="' . DOL_URL_ROOT . '/user/list.php?restore_lastsearch_values=1">' . $langs->trans("BackToList") . '</a>';
 }
 
-$morehtmlref = '<a href="'.DOL_URL_ROOT.'/user/vcard.php?id='.$object->id.'&output=file&file='.urlencode(dol_sanitizeFileName($object->getFullName($langs).'.vcf')).'" class="refid valignmiddle" rel="noopener">';
-$morehtmlref .= img_picto($langs->trans("Download").' '.$langs->trans("VCard"), 'vcard', 'class="valignmiddle marginleftonly paddingrightonly"');
+$morehtmlref = '<a href="' . DOL_URL_ROOT . '/user/vcard.php?id=' . $object->id . '&output=file&file=' . urlencode(dol_sanitizeFileName($object->getFullName($langs) . '.vcf')) . '" class="refid valignmiddle" rel="noopener">';
+$morehtmlref .= img_picto($langs->trans("Download") . ' ' . $langs->trans("VCard"), 'vcard', 'class="valignmiddle marginleftonly paddingrightonly"');
 $morehtmlref .= '</a>';
 
-$urltovirtualcard = '/user/virtualcard.php?id='.((int) $object->id);
-$morehtmlref .= dolButtonToOpenUrlInDialogPopup('publicvirtualcard', $langs->transnoentitiesnoconv("PublicVirtualCardUrl").' - '.$object->getFullName($langs), img_picto($langs->trans("PublicVirtualCardUrl"), 'card', 'class="valignmiddle marginleftonly paddingrightonly"'), $urltovirtualcard, '', 'refid valignmiddle nohover');
+$urltovirtualcard = '/user/virtualcard.php?id=' . ((int) $object->id);
+$morehtmlref .= dolButtonToOpenUrlInDialogPopup('publicvirtualcard', $langs->transnoentitiesnoconv("PublicVirtualCardUrl") . ' - ' . $object->getFullName($langs), img_picto($langs->trans("PublicVirtualCardUrl"), 'card', 'class="valignmiddle marginleftonly paddingrightonly"'), $urltovirtualcard, '', 'refid valignmiddle nohover');
 
 dol_banner_tab($object, 'id', $linkback, $user->hasRight('user', 'user', 'lire') || $user->admin, 'rowid', 'ref', $morehtmlref);
 
@@ -197,7 +197,7 @@ print '<div class="underbanner clearboth"></div>';
 print '<table class="border tableforfield centpercent">';
 
 // Login
-print '<tr><td id="anchorforperms" class="titlefield">'.$langs->trans("Login").'</td>';
+print '<tr><td id="anchorforperms" class="titlefield">' . $langs->trans("Login") . '</td>';
 if (!empty($object->ldap_sid) && $object->status == 0) {
 	print '<td class="error">';
 	print $langs->trans("LoginAccountDisableInDolibarr");
@@ -212,10 +212,10 @@ if (!empty($object->ldap_sid) && $object->status == 0) {
 			$addadmin .= img_picto($langs->trans("AdministratorDesc"), "star", 'class="paddingleft valignmiddle"');
 		}
 	}
-	print showValueWithClipboardCPButton($object->login).$addadmin;
+	print showValueWithClipboardCPButton($object->login) . $addadmin;
 	print '</td>';
 }
-print '</tr>'."\n";
+print '</tr>' . "\n";
 
 print '</table>';
 
