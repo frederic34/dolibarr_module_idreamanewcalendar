@@ -34,6 +34,13 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/usergroups.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/user/class/user.class.php';
+/**
+ * @var Conf $conf
+ * @var DoliDB $db
+ * @var HookManager $hookmanager
+ * @var Translate $langs
+ * @var User $user
+ */
 
 // Load translation files required by page
 $langs->loadLangs(['agenda', 'admin', 'other', 'idreamanewcalendar@idreamanewcalendar']);
@@ -43,13 +50,18 @@ $actiontest = GETPOST('test', 'alpha');
 $actionsave = GETPOST('save', 'alpha');
 $contextpage = GETPOST('contextpage', 'aZ') ? GETPOST('contextpage', 'aZ') : 'useragenda'; // To manage different context of search
 
-$MAXAGENDA = $conf->global->AGENDA_EXT_NB ?? 5;
+$MAXAGENDA = getDolGlobalString('AGENDA_EXT_NB', 6);
 
 // List of available colors
 $colorlist = ['BECEDD', 'DDBECE', 'BFDDBE', 'F598B4', 'F68654', 'CBF654', 'A4A4A5'];
 
 // Security check
 $id = GETPOST('id', 'int');
+
+if (!isset($id) || empty($id)) {
+	accessforbidden();
+}
+
 $object = new User($db);
 $object->fetch($id, '', '', 1);
 $object->loadRights();
@@ -59,17 +71,17 @@ $socid = 0;
 if ($user->socid > 0) {
 	$socid = $user->socid;
 }
-$feature2 = (($socid && $user->rights->user->self->creer) ? '' : 'user');
+$feature2 = (($socid && $user->hasRight('user', 'self', 'creer')) ? '' : 'user');
+
+// Initialize a technical object to manage hooks of page. Note that conf->hooks_modules contains an array of hook context
+$hookmanager->initHooks(['usercard', 'useragenda', 'globalcard']);
 
 $result = restrictedArea($user, 'user', $id, 'user&user', $feature2);
 
 // If user is not user that read and no permission to read other users, we stop
-if (($object->id != $user->id) && (!$user->rights->user->user->lire)) {
+if (($object->id != $user->id) && (!$user->hasRight('user', 'user', 'lire'))) {
 	accessforbidden();
 }
-
-// Initialize technical object to manage hooks of page. Note that conf->hooks_modules contains array of hook context
-$hookmanager->initHooks(['usercard', 'useragenda', 'globalcard']);
 
 /*
  * Actions
@@ -121,7 +133,7 @@ if (empty($reshook)) {
 
 		if (!$error) {
 			$result = dol_set_user_param($db, $conf, $object, $tabparam);
-			if (!$result > 0) {
+			if (!($result > 0)) {
 				$error++;
 			}
 		}
@@ -149,6 +161,10 @@ $formother = new FormOther($db);
 $arrayofjs = [];
 $arrayofcss = [];
 
+$person_name = !empty($object->firstname) ? $object->lastname . ", " . $object->firstname : $object->lastname;
+$title = $person_name . " - " . $langs->trans('ExtSites');
+$help_url = '';
+
 llxHeader('', $langs->trans("UserSetup"), '', '', 0, 0, $arrayofjs, $arrayofcss);
 
 
@@ -166,10 +182,47 @@ if ($user->rights->user->user->lire || $user->admin) {
 	$linkback = '<a href="' . DOL_URL_ROOT . '/user/list.php?restore_lastsearch_values=1">' . $langs->trans("BackToList") . '</a>';
 }
 
-dol_banner_tab($object, 'id', $linkback, $user->rights->user->user->lire || $user->admin);
+$morehtmlref = '<a href="' . DOL_URL_ROOT . '/user/vcard.php?id=' . $object->id . '&output=file&file=' . urlencode(dol_sanitizeFileName($object->getFullName($langs) . '.vcf')) . '" class="refid valignmiddle" rel="noopener">';
+$morehtmlref .= img_picto($langs->trans("Download") . ' ' . $langs->trans("VCard"), 'vcard', 'class="valignmiddle marginleftonly paddingrightonly"');
+$morehtmlref .= '</a>';
 
+$urltovirtualcard = '/user/virtualcard.php?id=' . ((int) $object->id);
+$morehtmlref .= dolButtonToOpenUrlInDialogPopup('publicvirtualcard', $langs->transnoentitiesnoconv("PublicVirtualCardUrl") . ' - ' . $object->getFullName($langs), img_picto($langs->trans("PublicVirtualCardUrl"), 'card', 'class="valignmiddle marginleftonly paddingrightonly"'), $urltovirtualcard, '', 'refid valignmiddle nohover');
+
+dol_banner_tab($object, 'id', $linkback, $user->hasRight('user', 'user', 'lire') || $user->admin, 'rowid', 'ref', $morehtmlref);
+
+print '<div class="fichecenter">';
 
 print '<div class="underbanner clearboth"></div>';
+print '<table class="border tableforfield centpercent">';
+
+// Login
+print '<tr><td id="anchorforperms" class="titlefield">' . $langs->trans("Login") . '</td>';
+if (!empty($object->ldap_sid) && $object->status == 0) {
+	print '<td class="error">';
+	print $langs->trans("LoginAccountDisableInDolibarr");
+	print '</td>';
+} else {
+	print '<td>';
+	$addadmin = '';
+	if (property_exists($object, 'admin')) {
+		if (isModEnabled('multicompany') && !empty($object->admin) && empty($object->entity)) {
+			$addadmin .= img_picto($langs->trans("SuperAdministratorDesc"), "redstar", 'class="paddingleft valignmiddle"');
+		} elseif (!empty($object->admin)) {
+			$addadmin .= img_picto($langs->trans("AdministratorDesc"), "star", 'class="paddingleft valignmiddle"');
+		}
+	}
+	print showValueWithClipboardCPButton($object->login) . $addadmin;
+	print '</td>';
+}
+print '</tr>' . "\n";
+
+print '</table>';
+
+print '</div>';
+
+print dol_get_fiche_end();
+
 
 print '<br>';
 print '<span class="opacitymedium">' . $langs->trans("AgendaExtSitesDesc") . "</span><br>\n";
@@ -177,12 +230,11 @@ print "<br>\n";
 
 print '<div class="div-table-responsive">';
 print '<table class="noborder centpercent">';
-
 print '<tr class="liste_titre">';
 print '<td class="nowrap">' . $langs->trans("Parameter") . "</td>";
 print "<td>" . $langs->trans("Name") . "</td>";
 print "<td>" . $langs->trans("ExtSiteUrlAgenda") . '<div class="hideonsmartphone">' . " (" . $langs->trans("Example") . ': http://yoursite/agenda/agenda.ics)</div></td>';
-print '<td class="nowrap">' . $form->textwithpicto($langs->trans("FixTZ"), $langs->trans("FillFixTZOnlyIfRequired"), 1) . '</td>';
+print '<td>' . $form->textwithpicto($langs->trans("FixTZ"), $langs->trans("FillFixTZOnlyIfRequired"), 1) . '</td>';
 print '<td class="nowrap">' . $form->textwithpicto($langs->trans("IDreamANewCalendarCacheTime"), $langs->trans("IDreamANewCalendarCacheTimeOnlyIfRequired", 1800), 1) . '</td>';
 print '<td class="right">' . $langs->trans("Color") . '</td>';
 print "</tr>";
@@ -195,10 +247,11 @@ while ($i <= $MAXAGENDA) {
 	$offsettz = 'AGENDA_EXT_OFFSETTZ_' . $id . '_' . $key;
 	$color = 'AGENDA_EXT_COLOR_' . $id . '_' . $key;
 	$cachetime = 'AGENDA_EXT_CACHE_' . $id . '_' . $key;
+	$enabled = 'AGENDA_EXT_ENABLED_' . $id . '_' . $key;
 
 	print '<tr class="oddeven">';
 	// Nb
-	print '<td class="maxwidth50onsmartphone">' . $langs->trans("AgendaExtNb", $key) . "</td>";
+	print '<td class="maxwidth50onsmartphone center">' . $langs->trans("AgendaExtNb", $key) . "</td>";
 	// Name
 	$name_value = (GETPOST('AGENDA_EXT_NAME_' . $id . '_' . $key) ? GETPOST('AGENDA_EXT_NAME_' . $id . '_' . $key) : (empty($object->conf->$name) ? '' : $object->conf->$name));
 	print '<td><input type="text" class="flat hideifnotset minwidth100 maxwidth100onsmartphone" name="AGENDA_EXT_NAME_' . $id . '_' . $key . '" value="' . $name_value . '"></td>';
@@ -213,7 +266,6 @@ while ($i <= $MAXAGENDA) {
 	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_CACHE_' . $id . '_' . $key . '" value="' . $cachetime_value . '" size="5"></td>';
 	// Color (Possible colors are limited by Google)
 	print '<td class="nowraponall right">';
-	//print $formadmin->selectColor($conf->global->$color, "google_agenda_color".$key, $colorlist);
 	$color_value = (GETPOST("AGENDA_EXT_COLOR_" . $id . '_' . $key) ? GETPOST("AGENDA_EXT_COLOR_" . $id . '_' . $key) : (empty($object->conf->$color) ? '' : $object->conf->$color));
 	print $formother->selectColor($color_value, "AGENDA_EXT_COLOR_" . $id . '_' . $key, 'extsitesconfig', 1, '', 'hideifnotset');
 	print '</td>';

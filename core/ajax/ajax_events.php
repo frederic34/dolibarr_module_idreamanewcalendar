@@ -457,6 +457,7 @@ switch ($action) {
 				'offsettz' => 0,
 				'color' => '#2e0ebe',
 				'buggedfile' => 0,
+				'enabled' => true,
 			],
 			[
 				'src' => '',
@@ -465,6 +466,7 @@ switch ($action) {
 				'offsettz' => 0,
 				'color' => '#46ab2a',
 				'buggedfile' => 0,
+				'enabled' => true,
 			],
 		];
 		$MAXAGENDA = getDolGlobalInt('AGENDA_EXT_NB', 6);
@@ -477,6 +479,7 @@ switch ($action) {
 				$name = 'AGENDA_EXT_NAME' . $i;
 				$offsettz = 'AGENDA_EXT_OFFSETTZ' . $i;
 				$color = 'AGENDA_EXT_COLOR' . $i;
+				$enabled = 'AGENDA_EXT_ENABLED' . $i;
 				$buggedfile = 'AGENDA_EXT_BUGGEDFILE' . $i;
 				if (getDolGlobalString($source) && getDolGlobalString($name)) {
 					// Note: $conf->global->buggedfile can be empty
@@ -488,6 +491,7 @@ switch ($action) {
 						'offsettz' => getDolGlobalInt($offsettz),
 						'color' => '#' . getDolGlobalString($color),
 						'buggedfile' => getDolGlobalInt($buggedfile),
+						'enabled' => getDolGlobalInt($enabled),
 					];
 				}
 			}
@@ -512,6 +516,7 @@ switch ($action) {
 						'offsettz' => getDolUserInt($offsettz),
 						'color' => '#' . getDolUserString($color),
 						'buggedfile' => getDolUserInt($buggedfile),
+						'enabled' => (bool) getDolUserInt($enabled),
 					];
 				}
 			}
