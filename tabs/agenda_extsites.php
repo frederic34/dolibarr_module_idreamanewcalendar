@@ -52,7 +52,7 @@ $colorlist = ['BECEDD', 'DDBECE', 'BFDDBE', 'F598B4', 'F68654', 'CBF654', 'A4A4A
 $id = GETPOST('id', 'int');
 $object = new User($db);
 $object->fetch($id, '', '', 1);
-$object->getrights();
+$object->loadRights();
 
 // Security check
 $socid = 0;
@@ -178,8 +178,8 @@ print "<br>\n";
 print '<div class="div-table-responsive">';
 print '<table class="noborder centpercent">';
 
-print "<tr class=\"liste_titre\">";
-print "<td>" . $langs->trans("Parameter") . "</td>";
+print '<tr class="liste_titre">';
+print '<td class="nowrap">' . $langs->trans("Parameter") . "</td>";
 print "<td>" . $langs->trans("Name") . "</td>";
 print "<td>" . $langs->trans("ExtSiteUrlAgenda") . '<div class="hideonsmartphone">' . " (" . $langs->trans("Example") . ': http://yoursite/agenda/agenda.ics)</div></td>';
 print '<td class="nowrap">' . $form->textwithpicto($langs->trans("FixTZ"), $langs->trans("FillFixTZOnlyIfRequired"), 1) . '</td>';
