@@ -64,3 +64,5 @@ IDreamANewCalendarCacheTime=Cache Duration (sec)
 IDreamANewCalendarCacheTimeOnlyIfRequired=Specify source caching time in seconds, default %s seconds if empty.
 CHECKLASTVERSION_EXTERNALMODULE=Force checking of external module versions (not recommended, this option may have been activated by another module)
 MAIN_STORE_FULL_EVENT_IN_GMT=Record events for one day in GMT format (not retroactive for events already recorded)
+IDreamANewCalendarSetup=Configuring the IDreamANewCalendar module
+IDreamANewCalendarSetupPage=IDreamANewCalendar module configuration page
