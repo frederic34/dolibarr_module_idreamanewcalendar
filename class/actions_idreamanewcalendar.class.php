@@ -291,6 +291,7 @@ class ActionsIDreamANewCalendar
 			];
 			$arrayofcss = [
 				'/idreamanewcalendar/lib/event-calendar/event-calendar.min.css',
+				'/idreamanewcalendar/css/idreamanewcalendar.css.php'
 			];
 			llxHeader('', $langs->trans("Agenda"), '', '', 0, 0, $arrayofjs, $arrayofcss);
 
@@ -345,9 +346,9 @@ class ActionsIDreamANewCalendar
 						$listofextcals[] = [
 							'src' => $conf->global->$source,
 							'name' => $conf->global->$name,
-							'offsettz' => (!empty($conf->global->$offsettz) ? $conf->global->$offsettz : 0),
-							'color' => $conf->global->$color,
-							'buggedfile' => (isset($conf->global->buggedfile) ? $conf->global->buggedfile : 0),
+							'offsettz' => getDolGlobalInt($offsettz),
+							'color' => getDolGlobalString($color),
+							'buggedfile' => getDolGlobalInt($buggedfile),
 						];
 					}
 				}
@@ -366,11 +367,11 @@ class ActionsIDreamANewCalendar
 					if (!empty($user->conf->$source) && !empty($user->conf->$name)) {
 						// Note: $conf->global->buggedfile can be empty or 'uselocalandtznodaylight' or 'uselocalandtzdaylight'
 						$listofextcals[] = [
-							'src' => $user->conf->$source,
+							'src' => getDolUserString($source),
 							'name' => $user->conf->$name,
 							'offsettz' => (!empty($user->conf->$offsettz) ? $user->conf->$offsettz : 0),
-							'color' => $user->conf->$color,
-							'buggedfile' => (isset($user->conf->buggedfile) ? $user->conf->buggedfile : 0),
+							'color' => getDolUserString($color),
+							'buggedfile' => (isset($user->conf->$buggedfile) ? $user->conf->$buggedfile : 0),
 						];
 					}
 				}
@@ -622,7 +623,7 @@ class ActionsIDreamANewCalendar
 			// }
 			//print load_fiche_titre($s, $link.' &nbsp; &nbsp; '.$nav, '', 0, 0, 'tablelistofcalendars');
 
-			$preselectedeventtypes = explode(',', $conf->global->AGENDA_DEFAULT_FILTER_TYPE ?? '');
+			$preselectedeventtypes = explode(',', getDolGlobalString('AGENDA_DEFAULT_FILTER_TYPE'));
 			$selecteds = [];
 			foreach ($preselectedeventtypes as $type) {
 				$selecteds[] = "'" . $type . "'";
@@ -667,61 +668,6 @@ class ActionsIDreamANewCalendar
 			// CALENDAR
 			print '<div id="ec" style="height: 800px;"></div>';
 			?>
-			<style type="text/css">
-				.row {
-					display: flex;
-				}
-
-				.col {
-					flex: 1 1 0%;
-					min-width: 0;
-					max-width: 100%;
-				}
-
-				.ec {
-					height: 640px;
-				}
-
-				.ec.ec-day-grid {
-					height: 400px;
-				}
-
-				@media (min-width: 576px) {
-					.ec {
-						height: 700px;
-					}
-
-					.ec.ec-day-grid {
-						height: 500px;
-					}
-				}
-
-				@media (min-width: 992px) {
-					.ec {
-						height: 800px;
-					}
-
-					.ec.ec-day-grid {
-						height: 700px;
-					}
-				}
-
-				@media (min-width: 1200px) {
-					.ec.ec-day-grid {
-						height: 800px;
-					}
-				}
-
-				.row {
-					display: flex;
-				}
-
-				.col {
-					flex: 1 1 0%;
-					min-width: 0;
-					max-width: 100%;
-				}
-			</style>
 			<div class="row">
 				<div id="ec" class="col"></div>
 			</div>
@@ -737,6 +683,51 @@ class ActionsIDreamANewCalendar
 					prev: '<?php echo dol_escape_js($langs->transnoentities("Previous")); ?>',
 					next: '<?php echo dol_escape_js($langs->transnoentities("Next")); ?>',
 				}
+				let CalendarList = [];
+				async function generateCalendarList() {
+					try {
+						const res = await fetch('<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>?action=getcalendars', {
+							headers: {
+								 "Content-Type": "application/json; charset=utf-8"
+							}
+						});
+						if (!res.ok) {
+							throw new Error(`Erreur HTTP : ${res.status}`);
+						}
+						const response = await res.text();
+						// check json response
+						try {
+							return JSON.parse(response);
+						} catch (e) {
+							throw new Error("La réponse n'est pas un JSON valide.");
+						}
+					} catch (error) {
+						console.error("Erreur lors de la récupération des calendriers :", error);
+						throw error; // Propager l'erreur pour une gestion ultérieure
+					}
+				}
+				async function afficherCalendriers() {
+					try {
+						var html = [];
+						const calendarSelectList = document.getElementById('calendarSelectList');
+						const calendars = await generateCalendarList();
+						calendars.forEach(function(calendar) {
+							console.log(calendar);
+							CalendarList.push(calendar);
+							html.push('<div class=\"lnb-calendars-item\"><label>' +
+								'<input type=\"checkbox\" class=\"ec-calendar-checkbox-round\" value=\"' + calendar.calendarId + '\" checked>' +
+								'<span style=\"border-color: ' + calendar.color + '; background-color: ' + calendar.color + ';\"></span>' +
+								'<span>' + calendar.name + '</span>' +
+								'</label></div>'
+							);
+						});
+						calendarSelectList.innerHTML = html.join('\n');
+					} catch (error) {
+						console.error("Impossible de récupérer les calendriers :", error);
+					}
+				}
+				afficherCalendriers();
+				setEventListener();
 				const ec = EventCalendar.create(document.getElementById('ec'), {
 					view: '<?php echo $ecview; ?>',
 					firstDay: <?php echo $firstday; ?>,
@@ -831,26 +822,6 @@ class ActionsIDreamANewCalendar
 									title: 'Resource C'
 								},
 								{
-									id: 4,
-									title: 'Resource D'
-								},
-								{
-									id: 5,
-									title: 'Resource E'
-								},
-								{
-									id: 6,
-									title: 'Resource F'
-								},
-								{
-									id: 7,
-									title: 'Resource G'
-								},
-								{
-									id: 8,
-									title: 'Resource H'
-								},
-								{
 									id: 9,
 									title: 'Resource I',
 									children: [{
@@ -871,10 +842,6 @@ class ActionsIDreamANewCalendar
 												{
 													id: 14,
 													title: 'Resource N'
-												},
-												{
-													id: 15,
-													title: 'Resource O'
 												}
 											]
 										}
@@ -907,6 +874,79 @@ class ActionsIDreamANewCalendar
 						console.log(info);
 					}
 				});
+				function setEventListener() {
+					$('#lnb-calendars').on('change', onChangeCalendars);
+				}
+				function onChangeCalendars(e) {
+					var calendarId = e.target.value;
+					var checked = e.target.checked;
+					var viewAll = document.querySelector('.lnb-calendars-item input');
+					var calendarElements = Array.prototype.slice.call(document.querySelectorAll('#calendarSelectList input'));
+					var allCheckedCalendars = true;
+					console.log(calendarId);
+					if (calendarId === 'all') {
+						allCheckedCalendars = checked;
+
+						calendarElements.forEach(function(input) {
+							var span = input.parentNode;
+							input.checked = checked;
+							span.style.backgroundColor = checked ? span.style.borderColor : 'transparent';
+						});
+
+						CalendarList.forEach(function(calendar) {
+							calendar.checked = checked;
+							//calendar.timer = ...
+						});
+					} else {
+						findCalendar(calendarId).checked = checked;
+
+						allCheckedCalendars = calendarElements.every(function(input) {
+							return input.checked;
+						});
+
+						if (allCheckedCalendars) {
+							viewAll.checked = true;
+						} else {
+							viewAll.checked = false;
+							//clearInterval(calendar.timer);
+						}
+					}
+
+					refreshScheduleVisibility();
+				}
+				function findCalendar(id) {
+					var found;
+					CalendarList.forEach(function(calendar) {
+						if (calendar.id === id) {
+							found = calendar;
+						}
+					});
+
+					return found || CalendarList[0];
+				}
+				function refreshScheduleVisibility() {
+					var calendarElements = Array.prototype.slice.call(document.querySelectorAll('#calendarSelectList input'));
+
+					//CalendarList.forEach(function(calendar) {
+						//cal.toggleSchedules(calendar.id, !calendar.checked, false);
+						// if (!calendar.checked) {
+						//     console.log('clearing timer for calendar ' + calendar.id);
+						//     clearInterval(calendar.timer);
+						// } else {
+						//     console.log('activate timer for calendar ' + calendar.id);
+						//     calendar.timer = setInterval(function() {
+						//         console.log('updating calendar ' + calendar.id);
+						//     }, 5000);
+						// }
+					//});
+
+					//cal.render(true);
+
+					calendarElements.forEach(function(input) {
+						var span = input.nextElementSibling;
+						span.style.backgroundColor = input.checked ? span.style.borderColor : 'transparent';
+					});
+				}
 			</script>
 			<?php
 			//print dol_get_fiche_end();
@@ -1259,13 +1299,13 @@ class ActionsIDreamANewCalendar
 				<div>
 					<div class="lnb-calendars-item">
 						<label>
-							<input class="tui-full-calendar-checkbox-square" type="checkbox" value="all" checked>
+							<input class="ec-calendar-checkbox-square" type="checkbox" value="all" checked>
 							<span></span>
 							<strong>' . $langs->trans('IDreamANewCalendarViewAll') . '</strong>
 						</label>
 					</div>
 				</div>
-				<div id="calendarList" class="lnb-calendars-d1">
+				<div id="calendarSelectList" class="lnb-calendars-d1">
 				</div>
 			</div>';
 		}

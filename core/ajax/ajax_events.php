@@ -49,7 +49,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/html.form.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 
 
-$langs->loadLangs(["agenda", "other", "commercial", "companies"]);
+$langs->loadLangs(["agenda", "other", "commercial", "companies", "idreamanewcalendar@idreamanewcalendar"]);
 
 top_httphead('application/json', 1);
 // dol_syslog('posted events ajax GET '.print_r($_GET, true), LOG_WARNING);
@@ -412,7 +412,7 @@ switch ($action) {
 		$preselectedtypes = [];
 		$response = [];
 		if (!empty($conf->global->AGENDA_DEFAULT_FILTER_TYPE)) {
-			$preselectedtypes = explode(',', $conf->global->AGENDA_DEFAULT_FILTER_TYPE);
+			$preselectedtypes = explode(',', getDolGlobalString('AGENDA_DEFAULT_FILTER_TYPE'));
 		}
 		$sql = "SELECT id, code, libelle as label, module, type, color, picto";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "c_actioncomm";
@@ -449,7 +449,24 @@ switch ($action) {
 		print json_encode($response);
 		break;
 	case 'getcalendars':
-		$listofextcals = [];
+		$listofextcals = [
+			[
+				'src' => '',
+				'name' => $langs->trans("LocalAgenda"),
+				'calendarId' => 1,
+				'offsettz' => 0,
+				'color' => '#2e0ebe',
+				'buggedfile' => 0,
+			],
+			[
+				'src' => '',
+				'name' => $langs->trans("IDreamANewCalendarBirthdayEvents"),
+				'calendarId' => 2,
+				'offsettz' => 0,
+				'color' => '#46ab2a',
+				'buggedfile' => 0,
+			],
+		];
 		$MAXAGENDA = getDolGlobalInt('AGENDA_EXT_NB', 6);
 		// Define list of external calendars (global admin setup)
 		if (!getDolGlobalInt('AGENDA_DISABLE_EXT')) {
@@ -469,7 +486,7 @@ switch ($action) {
 						'name' => getDolGlobalString($name),
 						'calendarId' => md5(getDolGlobalString($name)),
 						'offsettz' => getDolGlobalInt($offsettz),
-						'color' => getDolGlobalString($color),
+						'color' => '#' . getDolGlobalString($color),
 						'buggedfile' => getDolGlobalInt($buggedfile),
 					];
 				}
@@ -493,7 +510,7 @@ switch ($action) {
 						'name' => getDolUserString($name),
 						'calendarId' => md5(getDolUserString($name)),
 						'offsettz' => getDolUserInt($offsettz),
-						'color' => getDolUserString($color),
+						'color' => '#' . getDolUserString($color),
 						'buggedfile' => getDolUserInt($buggedfile),
 					];
 				}
@@ -778,12 +795,12 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 				'textColor' => ($obj->color != '' && isDarkColor($obj->color)) ? '#ffffff' : '#000000',
 				// bgColor : The schedule background color
 				'backgroundColor' => $event->type_color,
-				// borderColor : The schedule border color
-				'borderColor' => $event->color,
 				// raw : The user data
 				'extendedProps' => [
 					'location' => !empty($event->location) ? $event->location : '',
 					'attendees' => $assignedUsers,
+					// borderColor : The schedule border color
+					'borderColor' => $event->color,
 				]
 			];
 		}
