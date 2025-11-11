@@ -800,8 +800,8 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 		$sql .= ' AND (MONTH(birthday) = ' . date("m", $startDate / 1000);
 		$sql .= ' OR MONTH(birthday) = "12"';
 		$sql .= ' OR MONTH(birthday) = ' . date("m", $endDate / 1000) . ')';
-		//$sql.= ' AND DAY(birthday) >= '.date("d", strtotime($startDate));
-		//$sql.= ' AND DAY(birthday) <= '.date("d", strtotime($endDate));
+		// $sql.= ' AND DAY(birthday) >= '.date("d", strtotime($startDate));
+		// $sql.= ' AND DAY(birthday) <= '.date("d", strtotime($endDate));
 		$sql .= ' ORDER BY birthday';
 
 		$resql = $db->query($sql);
@@ -832,8 +832,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 				'backgroundColor' => '#555555',
 				// borderColor : The schedule border color
 				'borderColor' => '#891919ff',
-				// raw : The user data
-				// 'raw' => $raw,
+				'extendedProps' => [],
 			];
 		}
 	}
@@ -1015,8 +1014,6 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 						'title' => html_entity_decode($icalevent->summary),
 						// body : The schedule body text which is text/plain
 						'body' => nl2br($icalevent->description),
-						// 'start' => dol_print_date($date_start_in_calendar, "%Y-%m-%dT%H:%M:%S").'+03:00',
-						// 'end' => dol_print_date($date_end_in_calendar, "%Y-%m-%dT%H:%M:%S").'+03:00',
 						'start' => $dtstart->format('Y-m-d H:i:sP'),
 						'end' => $dtend->format('Y-m-d H:i:sP'),
 						// icals are readonly
@@ -1028,9 +1025,9 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 						'backgroundColor' => '#' . $colorcal,
 						// borderColor : The schedule border color
 						'borderColor' => '#' . $colorcal,
-						// 'location' => $icalevent->location,
-						// raw : The user data
-						// 'raw' => new stdClass(),
+						'extendedProps' => [
+							'location' => $icalevent->location,
+						],
 					];
 				}
 			}
