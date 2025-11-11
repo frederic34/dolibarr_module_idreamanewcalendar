@@ -40,18 +40,62 @@ include '../config.php';
 
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 
-// Load user to have $user->conf loaded (not done by default here because of NOLOGIN constant defined) and load permission if we need to use them in CSS
-/*if (empty($user->id) && ! empty($_SESSION['dol_login'])) {
-	$user->fetch('',$_SESSION['dol_login']);
-	user->getrights();
-}*/
-
 
 // Define css type
 header('Content-type: text/css');
 header('Cache-Control: max-age=10800, public, must-revalidate');
 
 ?>
+.row {
+	display: flex;
+}
+.col {
+	flex: 1 1 0%;
+	min-width: 0;
+	max-width: 100%;
+}
+.ec {
+	height: 640px;
+}
+.ec.ec-day-grid {
+	height: 400px;
+}
+
+@media (min-width: 576px) {
+	.ec {
+		height: 700px;
+	}
+
+	.ec.ec-day-grid {
+		height: 500px;
+	}
+}
+
+@media (min-width: 992px) {
+	.ec {
+		height: 800px;
+	}
+
+	.ec.ec-day-grid {
+		height: 700px;
+	}
+}
+
+@media (min-width: 1200px) {
+	.ec.ec-day-grid {
+		height: 800px;
+	}
+}
+
+.row {
+	display: flex;
+}
+
+.col {
+	flex: 1 1 0%;
+	min-width: 0;
+	max-width: 100%;
+}
 .tooltip-inner {
 	max-width:240px;
 	padding:3px 8px;
@@ -315,8 +359,34 @@ header('Cache-Control: max-age=10800, public, must-revalidate');
   font-weight: normal;
 }
 
-.img-bi {
-  background: url('../img/img-bi.png') no-repeat;
-  width: 215px;
-  height: 16px;
+input[type='checkbox'].ec-calendar-checkbox-square {
+  display: none;
+}
+input[type='checkbox'].ec-calendar-checkbox-square + span {
+  display: inline-block;
+  cursor: pointer;
+  line-height: 14px;
+  margin-right: 8px;
+  width: 14px;
+  height: 14px;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAAXNSR0IArs4c6QAAADpJREFUKBVjPHfu3O5///65MJAAmJiY9jCcOXPmP6kApIeJBItQlI5qRAkOVM5o4KCGBwqPkcxEvhsAbzRE+Jhb9IwAAAAASUVORK5CYII=) no-repeat;
+  vertical-align: middle;
+}
+input[type='checkbox'].ec-calendar-checkbox-square:checked + span {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAAAXNSR0IArs4c6QAAAMBJREFUKBWVkjEOwjAMRe2WgZW7IIHEDdhghhuwcQ42rlJugAQS54Cxa5cq1QM5TUpByZfS2j9+dlJVt/tX5ZxbS4ZU9VLkQvSHKTIGRaVJYFmKrBbTCJxE2UgCdDzMZDkHrOV6b95V0US6UmgKodujEZbJg0B0ZgEModO5lrY1TMQf1TpyJGBEjD+E2NPN7ukIUDiF/BfEXgRiGEw8NgkffYGYwCi808fpn/6OvfUfsDr/Vc1IfRf8sKnFVqeiVQfDu0tf/nWH9gAAAABJRU5ErkJggg==) no-repeat;
+}
+input[type='checkbox'].ec-calendar-checkbox-round {
+  display: none;
+}
+input[type='checkbox'].ec-calendar-checkbox-round + span {
+  display: inline-block;
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  vertical-align: middle;
+  margin-right: 8px;
+  border-radius: 8px;
+  border: solid 2px;
+  background: transparent;
 }
