@@ -1,0 +1,41 @@
+/*
+ * Language code: uk_UA
+ * Generation date 2025-11-11 11:18:05
+ */
+ModuleIDreamANewCalendarName=Мрію про новий календар
+ModuleIDreamANewCalendarDesc=Швидкий календар з функцією перетягування та автоматичним оновленням
+IDreamANewCalendarSetup=Налаштування модуля IDreamANewCalendar
+IDreamANewCalendarSettings=Налаштування
+IDreamANewCalendarSetupPage=Сторінка конфігурації модуля IDreamANewCalendar
+IDreamANewCalendarDontShowAutoEvents=Не відображати автоматично вставлені події
+IDREAMANEWCALENDAR_LIGTHNESS_SWAP=Значення для зміни тексту події з чорного на білий (за замовчуванням 150)
+IDreamANewCalendarAbout=Про IDreamANewCalendar
+IDreamANewCalendarAboutPage=Сторінка про IDreamANewCalendar
+IDreamANewCalendarUser=Користувач
+IDreamANewCalendarViewAgenda=Щоденник
+IDreamANewCalendarFree=Доступно
+IDreamANewCalendarBusy=Зайнятий
+IDreamANewCalendarUpdate=Для оновлення
+IDreamANewCalendarEdit=Редагувати
+IDreamANewCalendarDelete=ВИДАЛИТИ
+IDreamANewCalendarSave=Зберегти
+IDreamANewCalendarSubject=Тема
+IDreamANewCalendarLocation=Місцезнаходження:
+IDreamANewCalendarBody=Зміст:
+IDreamANewCalendarAllDay=Денний час
+IDreamANewCalendarDaily=День
+IDreamANewCalendarWeekly=Тиждень
+IDreamANewCalendar2weeks=2 тижні
+IDreamANewCalendar3weeks=3 тижні
+IDreamANewCalendarMonthly=Місяць
+IDreamANewCalendarShowweekends=Дивіться вихідні
+IDreamANewCalendarStartWeekOnMonday=Тиждень починається в понеділок
+IDreamANewCalendarNarrowerThanWeekdays=Зменште тривалість вихідних
+IDreamANewCalendarViewAll=Усі
+IDreamANewCalendarBirthdayEvents=Дні народження
+IDreamANewCalendarExtSites=Зовнішні календарі
+IDreamANewCalendarCacheTime=Тривалість кешу (сек)
+IDreamANewCalendarCacheTimeOnlyIfRequired=Вкажіть час кешування джерела в секундах, за замовчуванням %s секунд, якщо поле порожнє.
+MAIN_ENABLE_AJAX_TOOLTIP=Увімкнути підказки AJAX (потрібна версія Dolibarr &gt;= 18)
+CHECKLASTVERSION_EXTERNALMODULE=Примусова перевірка версій зовнішніх модулів (не рекомендується, ця опція, можливо, вже була ввімкнена іншим модулем)
+MAIN_STORE_FULL_EVENT_IN_GMT=Запис подій за один день у форматі GMT (не має зворотної сили для вже записаних подій)
