@@ -890,7 +890,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 							'calendarId' => md5(getDolUserString($name)),
 							'src' => getDolUserString($source),
 							'name' => getDolUserString($name),
-							'offsettz' => empty($user->conf->$offsettz) ? 0 : $user->conf->$offsettz,
+							'offsettz' => getDolUserInt($offsettz),
 							'color' => getDolUserString($color),
 							//'buggedfile' => (isset($user->conf->buggedfile) ? $user->conf->buggedfile : 0),
 						];
@@ -906,7 +906,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 		$lastdaytoshow = $endDate / 1000;
 
 		// require_once DOL_DOCUMENT_ROOT . '/comm/action/class/ical.class.php';
-		// cache des fichiers ics
+		// caching ics files
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 		dol_include_once('/idreamanewcalendar/lib/ics-parser/src/ICal/ICal.php');
 		dol_include_once('/idreamanewcalendar/lib/ics-parser/src/ICal/Event.php');
