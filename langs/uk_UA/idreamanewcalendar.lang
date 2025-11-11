@@ -39,3 +39,4 @@ IDreamANewCalendarCacheTimeOnlyIfRequired=Вкажіть час кешуванн
 MAIN_ENABLE_AJAX_TOOLTIP=Увімкнути підказки AJAX (потрібна версія Dolibarr &gt;= 18)
 CHECKLASTVERSION_EXTERNALMODULE=Примусова перевірка версій зовнішніх модулів (не рекомендується, ця опція, можливо, вже була ввімкнена іншим модулем)
 MAIN_STORE_FULL_EVENT_IN_GMT=Запис подій за один день у форматі GMT (не має зворотної сили для вже записаних подій)
+AGENDA_ALL_CALENDARS=Переглянути всі календарі користувачів за замовчуванням

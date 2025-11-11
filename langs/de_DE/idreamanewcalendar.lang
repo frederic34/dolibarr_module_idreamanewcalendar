@@ -43,3 +43,4 @@ IDreamANewCalendarCacheTime=Cache-Dauer (Sek.)
 IDreamANewCalendarCacheTimeOnlyIfRequired=Geben Sie die Quell-Caching-Zeit in Sekunden an, standardmäßige %s-Sekunden, wenn leer.
 CHECKLASTVERSION_EXTERNALMODULE=Erzwingen der Überprüfung externer Modulversionen (nicht empfohlen, diese Option wurde möglicherweise von einem anderen Modul aktiviert)
 MAIN_STORE_FULL_EVENT_IN_GMT=Ereignisse für einen Tag im GMT-Format erfassen (nicht rückwirkend für bereits erfasste Ereignisse)
+AGENDA_ALL_CALENDARS=Alle Standardbenutzerkalender anzeigen
