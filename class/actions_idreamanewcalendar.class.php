@@ -749,6 +749,24 @@ class ActionsIDreamANewCalendar
 						}
 					],
 					scrollTime: '09:00:00',
+					eventContent: function (info) {
+						let content;
+						switch (info.event.display) {
+							case 'background':
+								content = '';
+								break;
+							case 'pointer':
+								content = {
+									domNodes: [createElement('div', 'ec-event-time', null, info.timeText)]
+								};
+								break;
+							default:
+								content = {
+									domNodes: [createElement('div', 'ec-event-title', info.event.titleHTML, info.event.title)]
+								};
+						}
+						return content;
+					},
 					eventSources: [{
 							events: function(fetchInfo, successCallback, failureCallback) {
 								$.ajax({
@@ -874,6 +892,16 @@ class ActionsIDreamANewCalendar
 						console.log(info);
 					}
 				});
+				function createElement(tag, className, html, text) {
+					let el = document.createElement(tag);
+					el.className = className;
+					if (html) {
+						el.innerHTML = html;
+					} else if (text) {
+						el.innerText = text;
+					}
+					return el;
+				}
 				function setEventListener() {
 					$('#lnb-calendars').on('change', onChangeCalendars);
 				}
