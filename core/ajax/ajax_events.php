@@ -798,7 +798,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 				'allDay' => $isallday,
 				// color : The schedule text color (black or white)
 				'textColor' => ($obj->color != '' && isDarkColor($obj->color)) ? '#ffffff' : '#000000',
-				// bgColor : The schedule background color
+				// backgroundColor : The schedule background color
 				'backgroundColor' => $event->type_color,
 				// raw : The user data
 				'extendedProps' => [
@@ -850,7 +850,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 				'allDay' => true,
 				// color : The schedule text color
 				'textColor' => isDarkColor($obj->color) ? '#ffffff' : '#000000',
-				// bgColor : The schedule background color
+				// backgroundColor : The schedule background color
 				'backgroundColor' => '#555555',
 				// borderColor : The schedule border color
 				'borderColor' => '#891919ff',
@@ -1043,7 +1043,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 						'allDay' => $fulldayevent,
 						// color : The schedule text color
 						'textColor' => isDarkColor($colorcal) ? '#ffffff' : '#000000',
-						// bgColor : The schedule background color
+						// backgroundColor : The schedule background color
 						'backgroundColor' => '#' . $colorcal,
 						// borderColor : The schedule border color
 						'borderColor' => '#' . $colorcal,
