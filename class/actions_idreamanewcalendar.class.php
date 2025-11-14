@@ -750,6 +750,7 @@ class ActionsIDreamANewCalendar
 					],
 					scrollTime: '09:00:00',
 					eventContent: function (info) {
+						console.log(info);
 						let content;
 						switch (info.event.display) {
 							case 'background':
@@ -762,7 +763,7 @@ class ActionsIDreamANewCalendar
 								break;
 							default:
 								content = {
-									domNodes: [createElement('div', 'ec-event-title', info.event.titleHTML, info.event.title)]
+									domNodes: [createElement('div', 'ec-event-title', info.event.title.html, info.event.title)]
 								};
 						}
 						return content;
@@ -894,6 +895,7 @@ class ActionsIDreamANewCalendar
 				});
 				function createElement(tag, className, html, text) {
 					let el = document.createElement(tag);
+					console.log(el, html);
 					el.className = className;
 					if (html) {
 						el.innerHTML = html;
