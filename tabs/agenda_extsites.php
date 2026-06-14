@@ -170,7 +170,7 @@ llxHeader('', $langs->trans("UserSetup"), '', '', 0, 0, $arrayofjs, $arrayofcss)
 
 print '<form name="extsitesconfig" action="' . $_SERVER["PHP_SELF"] . '" method="post">';
 print '<input type="hidden" name="id" value="' . $id . '">';
-print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+print '<input type="hidden" name="token" value="' . newToken() . '">';
 
 $head = user_prepare_head($object);
 
@@ -178,7 +178,7 @@ print dol_get_fiche_head($head, 'extsites', $langs->trans("User"), -1, 'user');
 
 $linkback = '';
 
-if ($user->rights->user->user->lire || $user->admin) {
+if ($user->hasRight('user', 'user', 'lire') || $user->admin) {
 	$linkback = '<a href="' . DOL_URL_ROOT . '/user/list.php?restore_lastsearch_values=1">' . $langs->trans("BackToList") . '</a>';
 }
 

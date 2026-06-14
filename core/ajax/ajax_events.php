@@ -52,9 +52,9 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/date.lib.php';
 $langs->loadLangs(["agenda", "other", "commercial", "companies", "idreamanewcalendar@idreamanewcalendar"]);
 
 top_httphead('application/json', 1);
-// dol_syslog('posted events ajax GET '.print_r($_GET, true), LOG_WARNING);
-dol_syslog('posted events ajax POST ' . print_r($_POST, true), LOG_WARNING);
-dol_syslog('posted events ajax REQUEST ' . print_r($_REQUEST, true), LOG_WARNING);
+// dol_syslog('posted events ajax GET '.print_r($_GET, true), LOG_DEBUG);
+// dol_syslog('posted events ajax POST '.print_r($_POST, true), LOG_DEBUG);
+// dol_syslog('posted events ajax REQUEST '.print_r($_REQUEST, true), LOG_DEBUG);
 $action = GETPOSTISSET('action') ? GETPOST('action', 'aZ09') : 'getevents';
 $input = file_get_contents('php://input');
 switch ($action) {
@@ -161,7 +161,7 @@ switch ($action) {
 		// dol_syslog('posted events ajax REQUEST '.print_r($_POST, true), LOG_NOTICE);
 		if (GETPOSTISSET('schedule')) {
 			//$deletedevent = json_decode(GETPOST('schedule'), 'none');
-			$deletedevent = json_decode($_POST['schedule']);
+			$deletedevent = json_decode(GETPOST('schedule', 'none'));
 			dol_syslog('posted events ajax REQUEST ' . print_r($deletedevent, true), LOG_NOTICE);
 			$action = new ActionComm($db);
 			$action->fetch($deletedevent->id);
@@ -187,27 +187,27 @@ switch ($action) {
 			$sql .= ", dictp.code as country_code";
 		}
 		$sql .= " FROM " . MAIN_DB_PREFIX . "societe as s";
-		if (!$user->rights->societe->client->voir && !$user->socid) {
+		if (!$user->hasRight('societe', 'client', 'voir') && !$user->socid) {
 			$sql .= ", " . MAIN_DB_PREFIX . "societe_commerciaux as sc";
 		}
-		if (!empty($conf->global->COMPANY_SHOW_ADDRESS_SELECTLIST)) {
+		if (getDolGlobalInt('COMPANY_SHOW_ADDRESS_SELECTLIST')) {
 			$sql .= " LEFT OUTER JOIN " . MAIN_DB_PREFIX . "c_country as dictp ON dictp.rowid=s.fk_pays";
 		}
 		$sql .= " WHERE s.entity IN (" . getEntity('societe') . ")";
 		if (!empty($user->socid)) {
 			$sql .= " AND s.rowid = " . $user->socid;
 		}
-		if (!$user->rights->societe->client->voir && !$user->socid) {
+		if (!$user->hasRight('societe', 'client', 'voir') && !$user->socid) {
 			$sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = " . $user->id;
 		}
-		if (!empty($conf->global->COMPANY_HIDE_INACTIVE_IN_COMBOBOX)) {
+		if (getDolGlobalInt('COMPANY_HIDE_INACTIVE_IN_COMBOBOX')) {
 			$sql .= " AND s.status <> 0";
 		}
 		// Add criteria
 		if ($filterkey && $filterkey != '') {
 			$sql .= " AND (";
 			// Can use index if COMPANY_DONOTSEARCH_ANYWHERE is on
-			$prefix = empty($conf->global->COMPANY_DONOTSEARCH_ANYWHERE) ? '%' : '';
+			$prefix = !getDolGlobalInt('COMPANY_DONOTSEARCH_ANYWHERE') ? '%' : '';
 			// For natural search
 			$scriteria = explode(' ', $filterkey);
 			$i = 0;
@@ -224,7 +224,7 @@ switch ($action) {
 			if (count($scriteria) > 1) {
 				$sql .= ")";
 			}
-			if (!empty($conf->barcode->enabled)) {
+			if (isModEnabled('barcode')) {
 				$sql .= " OR s.barcode LIKE '" . $db->escape($prefix . $filterkey) . "%'";
 			}
 			$sql .= " OR s.code_client LIKE '" . $db->escape($prefix . $filterkey) . "%' OR s.code_fournisseur LIKE '" . $db->escape($prefix . $filterkey) . "%'";
@@ -236,7 +236,7 @@ switch ($action) {
 		$resql = $db->query($sql);
 		while ($resql && $obj = $db->fetch_object($resql)) {
 			$label = '';
-			if ($conf->global->SOCIETE_ADD_REF_IN_LIST) {
+			if (getDolGlobalInt('SOCIETE_ADD_REF_IN_LIST')) {
 				if (($obj->client) && (!empty($obj->code_client))) {
 					$label = $obj->code_client . ' - ';
 				}
@@ -289,11 +289,11 @@ switch ($action) {
 				$sql .= " AND (p.fk_soc=0 OR p.fk_soc IS NULL)";
 			}
 			if ($socid > 0) {
-				if (empty($conf->global->PROJECT_ALLOW_TO_LINK_FROM_OTHER_COMPANY)) {
+				if (!getDolGlobalString('PROJECT_ALLOW_TO_LINK_FROM_OTHER_COMPANY')) {
 					$sql .= " AND (p.fk_soc = " . $socid . " OR p.fk_soc IS NULL)";
-				} elseif ($conf->global->PROJECT_ALLOW_TO_LINK_FROM_OTHER_COMPANY != 'all') {
+				} elseif (getDolGlobalString('PROJECT_ALLOW_TO_LINK_FROM_OTHER_COMPANY') != 'all') {
 					// PROJECT_ALLOW_TO_LINK_FROM_OTHER_COMPANY is 'all' or a list of ids separated by coma.
-					$sql .= " AND (p.fk_soc IN (" . $socid . ", " . $conf->global->PROJECT_ALLOW_TO_LINK_FROM_OTHER_COMPANY . ") OR p.fk_soc IS NULL)";
+					$sql .= " AND (p.fk_soc IN (" . $socid . ", " . getDolGlobalString('PROJECT_ALLOW_TO_LINK_FROM_OTHER_COMPANY') . ") OR p.fk_soc IS NULL)";
 				}
 			}
 			if (!empty($filterkey)) {
@@ -322,11 +322,11 @@ switch ($action) {
 
 		if ($user->hasRight('agenda', 'allactions', 'read')) {
 			$sql = "SELECT DISTINCT u.rowid, u.lastname as lastname, u.firstname, u.statut, u.login, u.admin, u.entity";
-			if (!empty($conf->multicompany->enabled) && $conf->entity == 1 && $user->admin && !$user->entity) {
+			if (isModEnabled('multicompany') && $conf->entity == 1 && $user->admin && !$user->entity) {
 				$sql .= ", e.label";
 			}
 			$sql .= " FROM " . MAIN_DB_PREFIX . "user as u";
-			if (!empty($conf->multicompany->enabled) && $conf->entity == 1 && $user->admin && !$user->entity) {
+			if (isModEnabled('multicompany') && $conf->entity == 1 && $user->admin && !$user->entity) {
 				$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "entity as e ON e.rowid=u.entity";
 				if ($force_entity) {
 					$sql .= " WHERE u.entity IN (0," . $force_entity . ")";
@@ -334,7 +334,7 @@ switch ($action) {
 					$sql .= " WHERE u.entity IS NOT NULL";
 				}
 			} else {
-				if (!empty($conf->global->MULTICOMPANY_TRANSVERSE_MODE)) {
+				if (getDolGlobalString('MULTICOMPANY_TRANSVERSE_MODE')) {
 					$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "usergroup_user as ug";
 					$sql .= " ON ug.fk_user = u.rowid";
 					$sql .= " WHERE ug.entity = " . $conf->entity;
@@ -345,19 +345,18 @@ switch ($action) {
 			if (!empty($user->socid)) {
 				$sql .= " AND u.fk_soc = " . $user->socid;
 			}
-			if (!empty($conf->global->USER_HIDE_INACTIVE_IN_COMBOBOX) || $noactive) {
+			if (getDolGlobalInt('USER_HIDE_INACTIVE_IN_COMBOBOX') || $noactive) {
 				$sql .= " AND u.statut <> 0";
 			}
 			if (!empty($filterkey)) {
 				$sql .= natural_search(['u.firstname', 'u.lastname'], $db->escape($filterkey));
 			}
-			if (empty($conf->global->MAIN_FIRSTNAME_NAME_POSITION)) {
+			if (!getDolGlobalString('MAIN_FIRSTNAME_NAME_POSITION')) {
 				// MAIN_FIRSTNAME_NAME_POSITION is 0 means firstname+lastname
 				$sql .= " ORDER BY u.firstname ASC";
 			} else {
 				$sql .= " ORDER BY u.lastname ASC";
 			}
-			dol_syslog($sql, LOG_WARNING);
 			// Build output string
 			$resql = $db->query($sql);
 			while ($resql && $obj = $db->fetch_object($resql)) {
@@ -411,7 +410,7 @@ switch ($action) {
 	case 'gettypeactions':
 		$preselectedtypes = [];
 		$response = [];
-		if (!empty($conf->global->AGENDA_DEFAULT_FILTER_TYPE)) {
+		if (getDolGlobalString('AGENDA_DEFAULT_FILTER_TYPE')) {
 			$preselectedtypes = explode(',', getDolGlobalString('AGENDA_DEFAULT_FILTER_TYPE'));
 		}
 		$sql = "SELECT id, code, libelle as label, module, type, color, picto";
@@ -543,7 +542,7 @@ function getDeletedEventsId($resourceId)
 	if ($resourceId != '1') {
 		return $events;
 	}
-	$sql = "SELECT fk_actioncomm FROM " . MAIN_DB_PREFIX . "actioncomm_deleted WHERE tms>'" . (int) (time() - (3 * 60 * 60)) . "'";
+	$sql = "SELECT fk_actioncomm FROM " . MAIN_DB_PREFIX . "actioncomm_deleted WHERE tms>'" . $db->idate(time() - (3 * 60 * 60)) . "'";
 	$resql = $db->query($sql);
 	while ($resql && $obj = $db->fetch_object($resql)) {
 		$events[] = [
@@ -654,7 +653,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 		if ($pid) {
 			$sql .= " AND a.fk_project=" . $db->escape($pid);
 		}
-		if (!$user->rights->societe->client->voir && !$socid) {
+		if (!$user->hasRight('societe', 'client', 'voir') && !$socid) {
 			$sql .= " AND (a.fk_soc IS NULL OR sc.fk_user = " . $user->id . ")";
 		}
 		if ($socid > 0) {
@@ -777,7 +776,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 			}
 			// Is Editable ?
 			$isEditable = true;
-			if (($event->type_code == 'AC_OTH_AUTO') || (($user->id != $event->userownerid) && !$user->rights->agenda->allactions->create)) {
+			if (($event->type_code == 'AC_OTH_AUTO') || (($user->id != $event->userownerid) && !$user->hasRight('agenda', 'allactions', 'create'))) {
 				$isEditable = false;
 			}
 
@@ -848,8 +847,8 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 				// birthdays are readonly
 				'editable' => false,
 				'allDay' => true,
-				// color : The schedule text color
-				'textColor' => isDarkColor($obj->color) ? '#ffffff' : '#000000',
+				// color : The schedule text color (birthday events always use dark background #555555)
+				'textColor' => '#ffffff',
 				// backgroundColor : The schedule background color
 				'backgroundColor' => '#555555',
 				// borderColor : The schedule border color
@@ -975,7 +974,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 					//die($e);
 					return [];
 				}
-				dol_syslog('Ical : ' . $namecal . ' cachetime : ' . print_r($ical->events(), true), LOG_WARNING);
+				dol_syslog('Ical : loaded ' . $namecal . ' cachetime : ' . $cachetime, LOG_DEBUG);
 				// on cache le fichier parsé
 				dol_filecache($cachedir, $filename, $ical);
 			} else {

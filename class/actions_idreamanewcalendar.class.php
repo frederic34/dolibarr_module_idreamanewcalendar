@@ -331,7 +331,7 @@ class ActionsIDreamANewCalendar
 			$MAXAGENDA = getDolGlobalInt('AGENDA_EXT_NB', 6);
 
 			// Define list of external calendars (global admin setup)
-			if (empty($conf->global->AGENDA_DISABLE_EXT)) {
+			if (!getDolGlobalInt('AGENDA_DISABLE_EXT')) {
 				$i = 0;
 				while ($i < $MAXAGENDA) {
 					$i++;
@@ -340,12 +340,12 @@ class ActionsIDreamANewCalendar
 					$offsettz = 'AGENDA_EXT_OFFSETTZ' . $i;
 					$color = 'AGENDA_EXT_COLOR' . $i;
 					$buggedfile = 'AGENDA_EXT_BUGGEDFILE' . $i;
-					if (!empty($conf->global->$source) && !empty($conf->global->$name)) {
+					if (getDolGlobalString($source) && getDolGlobalString($name)) {
 						// Note: $conf->global->buggedfile can be empty
 						// or 'uselocalandtznodaylight' or 'uselocalandtzdaylight'
 						$listofextcals[] = [
-							'src' => $conf->global->$source,
-							'name' => $conf->global->$name,
+							'src' => getDolGlobalString($source),
+							'name' => getDolGlobalString($name),
 							'offsettz' => getDolGlobalInt($offsettz),
 							'color' => getDolGlobalString($color),
 							'buggedfile' => getDolGlobalInt($buggedfile),
@@ -354,7 +354,7 @@ class ActionsIDreamANewCalendar
 				}
 			}
 			// Define list of external calendars (user setup)
-			if (empty($user->conf->AGENDA_DISABLE_EXT)) {
+			if (!getDolUserInt('AGENDA_DISABLE_EXT')) {
 				$i = 0;
 				while ($i < $MAXAGENDA) {
 					$i++;
@@ -391,7 +391,7 @@ class ActionsIDreamANewCalendar
 				// tmpday is a negative or null cursor to know how many days before the 1st to show on month view (if tmpday=0, 1st is monday)
 				// date('w') is 0 for sunday
 				$tmpday = -date("w", dol_mktime(12, 0, 0, $month, 1, $year, true)) + 2;
-				$tmpday += ((isset($conf->global->MAIN_START_WEEK) ? $conf->global->MAIN_START_WEEK : 1) - 1);
+				$tmpday += (getDolGlobalInt('MAIN_START_WEEK', 1) - 1);
 				if ($tmpday >= 1) {
 					// If tmpday is 0 we start with sunday, if -6, we start with monday of previous week.
 					$tmpday -= 7;
@@ -456,7 +456,7 @@ class ActionsIDreamANewCalendar
 			}
 
 			$param = '';
-			if ($actioncode || isset($_GET['search_actioncode']) || isset($_POST['search_actioncode'])) {
+			if ($actioncode || GETPOSTISSET('search_actioncode')) {
 				if (is_array($actioncode)) {
 					foreach ($actioncode as $str_action) {
 						$param .= "&search_actioncode[]=" . urlencode($str_action);
@@ -468,7 +468,7 @@ class ActionsIDreamANewCalendar
 			if ($resourceid > 0) {
 				$param .= "&search_resourceid=" . urlencode($resourceid);
 			}
-			if ($status || isset($_GET['status']) || isset($_POST['status'])) {
+			if ($status || GETPOSTISSET('status')) {
 				$param .= '&search_status=' . urlencode($status);
 			}
 			if ($filter) {
@@ -530,8 +530,8 @@ class ActionsIDreamANewCalendar
 			$param .= '&year=' . $year . '&month=' . $month . ($day ? '&day=' . $day : '');
 			//print 'x'.$param;
 
-			$defaultview = (empty($conf->global->AGENDA_DEFAULT_VIEW) ? 'show_month' : $conf->global->AGENDA_DEFAULT_VIEW);
-			$defaultview = (empty($user->conf->AGENDA_DEFAULT_VIEW) ? $defaultview : $user->conf->AGENDA_DEFAULT_VIEW);
+			$defaultview = getDolGlobalString('AGENDA_DEFAULT_VIEW', 'show_month');
+			$defaultview = getDolUserString('AGENDA_DEFAULT_VIEW', $defaultview);
 			// if (empty($mode) && !GETPOSTISSET('mode')) {
 			// 	$mode = $defaultview;
 			// }
@@ -645,7 +645,7 @@ class ActionsIDreamANewCalendar
 					</button>
 				</span>';
 
-			if (!empty($conf->societe->enabled) && !empty($user->rights->societe->lire)) {
+			if (isModEnabled('societe') && $user->hasRight('societe', 'lire')) {
 				print '<span id="search-customers" class="search-customers">';
 				print '    <input class="form-control customersAutoComplete" type="text" placeholder="' . $langs->trans('ThirdParty') . '" autocomplete="off">';
 				print '</span>';
@@ -653,7 +653,7 @@ class ActionsIDreamANewCalendar
 				print '    <select class="statesAutoComplete" multiple type="text" title="' . $langs->trans('StateShort') . '"></select>';
 				print '</span>';
 			}
-			if (isModEnabled('projet') && !empty($user->rights->projet->lire)) {
+			if (isModEnabled('projet') && $user->hasRight('projet', 'lire')) {
 				print '<span id="search-projects" class="search-projects">';
 				print '    <input class="form-control projectsAutoComplete" type="text" placeholder="' . $langs->trans("Project") . '" autocomplete="off">';
 				print '    <input id="project_id" name="project_id" type="hidden">';
@@ -871,6 +871,15 @@ class ActionsIDreamANewCalendar
 					dayMaxEvents: true,
 					nowIndicator: true,
 					selectable: true,
+					select: function (info) {
+						console.log(info);
+						ec.addEvent({
+							start: info.start,
+							end: info.end,
+							resourceId: 1
+						});
+						ec.unselect();
+					},
 					eventResizeStart: function(info) {
 						console.log('eventResizeStart');
 					},
@@ -1024,11 +1033,11 @@ class ActionsIDreamANewCalendar
 
 		// Filters
 		//print '<form name="listactionsfilter" class="listactionsfilter" action="' . $_SERVER["PHP_SELF"] . '" method="get">';
-		$html = '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+		$html = '<input type="hidden" name="token" value="' . newToken() . '">';
 		$html .= '<input type="hidden" name="year" value="' . $year . '">';
 		$html .= '<input type="hidden" name="month" value="' . $month . '">';
 		$html .= '<input type="hidden" name="day" value="' . $day . '">';
-		$html .= '<input type="hidden" name="action" value="' . $mode . '">';
+		$html .= '<input type="hidden" name="action" value="' . dol_escape_htmltag($action) . '">';
 		$html .= '<input type="hidden" name="search_showbirthday" value="' . $showbirthday . '">';
 
 		$html .= '<div class="fichecenter">';
@@ -1053,7 +1062,7 @@ class ActionsIDreamANewCalendar
 			$html .= $form->select_dolgroups($usergroupid, 'usergroup', 1, '', !$canedit);
 			$html .= '</td></tr>';
 
-			if ($conf->resource->enabled) {
+			if (isModEnabled('resource')) {
 				include_once DOL_DOCUMENT_ROOT . '/resource/class/html.formresource.class.php';
 				$formresource = new FormResource($db);
 
@@ -1072,11 +1081,11 @@ class ActionsIDreamANewCalendar
 			$html .= $langs->trans("Type");
 			$html .= ' &nbsp;</td><td class="nowrap" style="padding-bottom: 2px; padding-right: 4px;">';
 			$multiselect = 0;
-			if (!empty($conf->global->MAIN_ENABLE_MULTISELECT_TYPE)) {
+			if (getDolGlobalInt('MAIN_ENABLE_MULTISELECT_TYPE')) {
 				// We use an option here because it adds bugs when used on agenda page "peruser" and "list"
-				$multiselect = (!empty($conf->global->AGENDA_USE_EVENT_TYPE));
+				$multiselect = (int) getDolGlobalInt('AGENDA_USE_EVENT_TYPE');
 			}
-			$html .=  $formactions->select_type_actions($actioncode, "search_actioncode", $excludetype, (empty($conf->global->AGENDA_USE_EVENT_TYPE) ? 1 : -1), 0, $multiselect, 1);
+			$html .=  $formactions->select_type_actions($actioncode, "search_actioncode", $excludetype, (!getDolGlobalInt('AGENDA_USE_EVENT_TYPE') ? 1 : -1), 0, $multiselect, 1);
 			$html .=  '</td></tr>';
 		}
 
@@ -1089,7 +1098,7 @@ class ActionsIDreamANewCalendar
 		//     $html .= '</td></tr>';
 		// }
 
-		if (!empty($conf->projet->enabled) && $user->rights->projet->lire) {
+		if (isModEnabled('projet') && $user->hasRight('projet', 'lire')) {
 			require_once DOL_DOCUMENT_ROOT . '/core/class/html.formprojet.class.php';
 			$formproject = new FormProjets($db);
 
