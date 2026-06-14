@@ -18,13 +18,16 @@
 /**
  * \file    idreamanewcalendar/class/actions_idreamanewcalendar.class.php
  * \ingroup idreamanewcalendar
- * \brief   IDreamANewCalendar hook overload.
- *
- * Put detailed description here.
+ * \brief   Hook class that replaces the standard Dolibarr agenda view with the
+ *          EventCalendar-based calendar widget and manages external ICS feeds.
  */
 
 /**
- * Class ActionsIDreamANewCalendar
+ * Hook class for the IDreamANewCalendar module.
+ *
+ * Hooks into the Dolibarr agenda page (beforeAgenda) to inject the EventCalendar
+ * JavaScript widget, calendar source loading, filter toolbar, and external ICS
+ * calendar support (both global admin-configured and per-user).
  */
 class ActionsIDreamANewCalendar
 {
@@ -1213,17 +1216,19 @@ class ActionsIDreamANewCalendar
 	}
 
 	/**
-	 *  Show list of action status
+	 * Renders a select widget for filtering agenda events by completion status
+	 * (-1 = N/A, 0 = To do, 50 = Running, 100 = Done).
+	 * When JavaScript is enabled, changing the select updates the calendar filter live.
 	 *
-	 *  @param  string  $formname       Name of form where select is included
-	 *  @param  string  $selected       Preselected value (-1..100)
-	 *  @param  int     $canedit        1=can edit, 0=read only
-	 *  @param  string  $htmlname       Name of html prefix for html fields (selectX and valX)
-	 *  @param  integer $showempty      Show an empty line if select is used
-	 *  @param  integer $onlyselect     0=Standard, 1=Hide percent of completion and force usage of a select list, 2=Same than 1 and add "Incomplete (Todo+Running)
-	 *  @param  string  $morecss        More css on select field
-	 *  @param  int     $nooutput       1 return in string, 0 direct output
-	 *  @return void
+	 *  @param  string  $formname       Name of the enclosing HTML form
+	 *  @param  string  $selected       Pre-selected value (-1, 0, 50 or 100)
+	 *  @param  int     $canedit        1=editable select, 0=read-only label
+	 *  @param  string  $htmlname       Prefix for the generated HTML element ids
+	 *  @param  integer $showempty      1=add a blank first option
+	 *  @param  integer $onlyselect     0=standard radio+text, 1=dropdown only, 2=dropdown + "Incomplete" group
+	 *  @param  string  $morecss        Extra CSS classes applied to the select element
+	 *  @param  int     $nooutput       0=echo output directly, 1=return HTML string
+	 *  @return string|void             HTML string when $nooutput=1, void otherwise
 	 */
 	public function formSelectStatusAction($formname, $selected, $canedit = 1, $htmlname = 'complete', $showempty = 0, $onlyselect = 0, $morecss = 'maxwidth100', $nooutput = 0)
 	{

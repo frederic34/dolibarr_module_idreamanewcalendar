@@ -529,11 +529,13 @@ switch ($action) {
 $db->close();
 
 /**
- * get events.
+ * Returns IDs of Dolibarr agenda events deleted in the last 3 hours, used to
+ * synchronise the calendar client so it can remove stale entries.
+ * Only applies to resource 1 (local Dolibarr events); other resources return an empty array.
  *
- * @param   string  $resourceId     calendar id
+ * @param   string  $resourceId     Calendar resource id ('1' = local events)
  *
- * @return array<int,array{id:int,resourceId:string}> array of events
+ * @return array<int,array{id:int,resourceId:string}> Array of deleted event ids with their resource id
  */
 function getDeletedEventsId($resourceId)
 {
@@ -555,21 +557,26 @@ function getDeletedEventsId($resourceId)
 }
 
 /**
- * get events.
+ * Fetches calendar events for a given resource and date window and returns them
+ * as a JSON-serialisable array ready for the EventCalendar frontend.
  *
- * @param   string  $resourceId     calendar id
- * @param   string  $calendarName   calendar name
- * @param   int     $startDate      start date
- * @param   int     $endDate        end date
- * @param   int     $offset         timezone offset
- * @param   bool    $onlylast       only last refreshed events
- * @param   string  $search_actioncode actions code comma separated
- * @param   int     $search_userid  user id to search
- * @param   int     $socid          customer id
- * @param   string  $search_states  comma separated list of states
- * @param   string  $search_all     search everywhere
+ * Resource 1 — Dolibarr internal agenda events (llx_actioncomm).
+ * Resource 2 — Contact birthday events (llx_socpeople.birthday).
+ * Other resource ids — External ICS calendar feeds (global or per-user).
  *
- * @return array<int,array<string,mixed>>
+ * @param   string  $resourceId         Calendar resource id
+ * @param   string  $calendarName       ICS calendar name (used for external feeds only)
+ * @param   int     $startDate          Range start as a JavaScript millisecond timestamp
+ * @param   int     $endDate            Range end as a JavaScript millisecond timestamp
+ * @param   int     $offset             Unused — kept for API compatibility
+ * @param   bool    $onlylast           If true, return only events modified since last poll
+ * @param   string  $search_actioncode  Comma-separated action type codes to filter on
+ * @param   int     $search_userid      Restrict events to this user id (0 = all users)
+ * @param   int     $socid              Restrict events to this third-party id (0 = all)
+ * @param   string  $search_states      Comma-separated list of third-party states to filter on
+ * @param   string  $search_all         Full-text search string applied to label and note
+ *
+ * @return array<int,array<string,mixed>> Array of event objects in EventCalendar format
  */
 function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $onlylast, $search_actioncode, $search_userid, $socid, $search_states, $search_all)
 {
@@ -1059,10 +1066,12 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 }
 
 /**
- * function to check if a color is dark
+ * Returns true if the given hex color has a lightness below the configured threshold
+ * (constant EVENT_CALENDAR_LIGTHNESS_SWAP, default 155 out of 255).
+ * Used to decide whether to use white or black text on a coloured event tile.
  *
- * @param string $color color string
- * @return bool
+ * @param string $color Hex color string with or without leading '#'
+ * @return bool True when the color is considered dark
  */
 function isDarkColor($color)
 {
@@ -1078,10 +1087,10 @@ function isDarkColor($color)
 }
 
 /**
- * function HTMLToRGB
+ * Converts an HTML hex color code (#RGB or #RRGGBB) to a packed 24-bit integer (0xRRGGBB).
  *
- * @param string $htmlCode html code
- * @return int|float
+ * @param string $htmlCode Hex color string with or without leading '#'
+ * @return int Packed RGB integer
  */
 function HTMLToRGB($htmlCode)
 {
@@ -1101,8 +1110,9 @@ function HTMLToRGB($htmlCode)
 }
 
 /**
- * RGB to HSL
- * @param float|int $RGB RGB color
+ * Converts a packed 24-bit RGB integer to an HSL array with components in the range 0–255.
+ *
+ * @param float|int $RGB Packed RGB integer as returned by HTMLToRGB()
  * @return array{hue:int,saturation:int,lightness:int}
  */
 function RGBToHSL($RGB)
