@@ -870,6 +870,7 @@ class ActionsIDreamANewCalendar
 					},
 					dayMaxEvents: true,
 					nowIndicator: true,
+					editable: true,
 					selectable: true,
 					select: function (info) {
 						console.log(info);
@@ -880,25 +881,39 @@ class ActionsIDreamANewCalendar
 						});
 						ec.unselect();
 					},
-					eventResizeStart: function(info) {
-						console.log('eventResizeStart');
-					},
-					eventResizeStop: function(info) {
-						console.log('eventResizeStop');
-					},
 					eventResize: function(info) {
-						console.log('eventResize');
-						console.log(info);
-					},
-					eventDragStart: function(info) {
-						console.log('eventDragStart');
-					},
-					eventDragStop: function(info) {
-						console.log('eventDragStop');
+						var event = info.event;
+						$.ajax({
+							method: 'POST',
+							url: '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>',
+							dataType: 'json',
+							data: {
+								action: 'putevent',
+								token: token,
+								schedule: JSON.stringify({id: event.id, location: event.extendedProps.location || '', isAllDay: event.allDay}),
+								start: JSON.stringify({_date: event.start.toISOString()}),
+								end: JSON.stringify({_date: (event.end || event.start).toISOString()}),
+								offset: 0
+							},
+							error: function() { info.revert(); }
+						});
 					},
 					eventDrop: function(info) {
-						console.log('eventDrop');
-						console.log(info);
+						var event = info.event;
+						$.ajax({
+							method: 'POST',
+							url: '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>',
+							dataType: 'json',
+							data: {
+								action: 'putevent',
+								token: token,
+								schedule: JSON.stringify({id: event.id, location: event.extendedProps.location || '', isAllDay: event.allDay}),
+								start: JSON.stringify({_date: event.start.toISOString()}),
+								end: JSON.stringify({_date: (event.end || event.start).toISOString()}),
+								offset: 0
+							},
+							error: function() { info.revert(); }
+						});
 					}
 				});
 				function createElement(tag, className, html, text) {

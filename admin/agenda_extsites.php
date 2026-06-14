@@ -154,7 +154,7 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php?restore_lastsearch_
 print load_fiche_titre($langs->trans("AgendaSetup"), $linkback, 'title_setup');
 
 print '<form name="extsitesconfig" action="' . $_SERVER["PHP_SELF"] . '" method="post">';
-print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+print '<input type="hidden" name="token" value="' . newToken() . '">';
 print '<input type="hidden" name="action" value="save">';
 
 $head = idreamanewcalendarAdminPrepareHead();
@@ -179,7 +179,7 @@ print '<td class="center">';
 if ($conf->use_javascript_ajax) {
 	print ajax_constantonoff('AGENDA_DISABLE_EXT', ['enabled' => [0 => '.hideifnotset']], null, 1);
 } else {
-	if (empty($conf->global->AGENDA_DISABLE_EXT)) {
+	if (!getDolGlobalInt('AGENDA_DISABLE_EXT')) {
 		print '<a href="' . $_SERVER['PHP_SELF'] . '?save=1&AGENDA_DISABLE_EXT=1">' . img_picto($langs->trans("Enabled"), 'on') . '</a>';
 	} else {
 		print '<a href="' . $_SERVER['PHP_SELF'] . '?save=1&AGENDA_DISABLE_EXT=0">' . img_picto($langs->trans("Disabled"), 'off') . '</a>';
@@ -193,7 +193,7 @@ print "</tr>";
 print '<tr class="oddeven">';
 print '<td>' . $langs->trans("ExtSitesNbOfAgenda") . '</td>';
 print '<td class="center">';
-print '<input class="flat hideifnotset" type="text" size="2" id="AGENDA_EXT_NB" name="AGENDA_EXT_NB" value="' . ($conf->global->AGENDA_EXT_NB ?? 5) . '">';
+print '<input class="flat hideifnotset" type="text" size="2" id="AGENDA_EXT_NB" name="AGENDA_EXT_NB" value="' . getDolGlobalInt('AGENDA_EXT_NB', 5) . '">';
 print '</td>';
 print '</tr>';
 
@@ -228,16 +228,16 @@ while ($i <= $MAXAGENDA) {
 	// Nb
 	print '<td width="180" class="nowrap">' . $langs->trans("AgendaExtNb", $key) . "</td>";
 	// Name
-	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_NAME' . $key . '" value="' . (GETPOST('AGENDA_EXT_NAME' . $key) ? GETPOST('AGENDA_EXT_NAME' . $key, 'alpha') : ($conf->global->$name ?? '')) . '" size="25"></td>';
+	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_NAME' . $key . '" value="' . (GETPOST('AGENDA_EXT_NAME' . $key) ? GETPOST('AGENDA_EXT_NAME' . $key, 'alpha') : getDolGlobalString($name)) . '" size="25"></td>';
 	// URL
-	print '<td><input type="url" class="flat hideifnotset" name="AGENDA_EXT_SRC' . $key . '" value="' . (GETPOST('AGENDA_EXT_SRC' . $key) ? GETPOST('AGENDA_EXT_SRC' . $key, 'alpha') : ($conf->global->$src ?? '')) . '" size="80"></td>';
+	print '<td><input type="url" class="flat hideifnotset" name="AGENDA_EXT_SRC' . $key . '" value="' . (GETPOST('AGENDA_EXT_SRC' . $key) ? GETPOST('AGENDA_EXT_SRC' . $key, 'alpha') : getDolGlobalString($src)) . '" size="80"></td>';
 	// Offset TZ
-	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_OFFSETTZ' . $key . '" value="' . (GETPOST('AGENDA_EXT_OFFSETTZ' . $key) ? GETPOST('AGENDA_EXT_OFFSETTZ' . $key) : ($conf->global->$offsettz ?? '')) . '" size="4"></td>';
+	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_OFFSETTZ' . $key . '" value="' . (GETPOST('AGENDA_EXT_OFFSETTZ' . $key) ? GETPOST('AGENDA_EXT_OFFSETTZ' . $key) : getDolGlobalString($offsettz)) . '" size="4"></td>';
 	// Cache time
-	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_CACHE' . $key . '" value="' . (GETPOST('AGENDA_EXT_CACHE' . $key) ? GETPOST('AGENDA_EXT_CACHE' . $key) : ($conf->global->$cache ?? '')) . '" size="10"></td>';
+	print '<td><input type="text" class="flat hideifnotset" name="AGENDA_EXT_CACHE' . $key . '" value="' . (GETPOST('AGENDA_EXT_CACHE' . $key) ? GETPOST('AGENDA_EXT_CACHE' . $key) : getDolGlobalString($cache)) . '" size="10"></td>';
 	// Color (Possible colors are limited by Google)
 	print '<td class="nowraponall right">';
-	print $formother->selectColor((GETPOST("AGENDA_EXT_COLOR" . $key) ? GETPOST("AGENDA_EXT_COLOR" . $key) : ($conf->global->$color ?? '')), "AGENDA_EXT_COLOR" . $key, 'extsitesconfig', 1, '', 'hideifnotset');
+	print $formother->selectColor((GETPOST("AGENDA_EXT_COLOR" . $key) ? GETPOST("AGENDA_EXT_COLOR" . $key) : getDolGlobalString($color)), "AGENDA_EXT_COLOR" . $key, 'extsitesconfig', 1, '', 'hideifnotset');
 	print '</td>';
 	// Calendar active by default
 	print '<td class="nowrap right">';

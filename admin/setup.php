@@ -117,7 +117,7 @@ echo '<span class="opacitymedium">' . $langs->trans("IDreamANewCalendarSetupPage
 
 if ($action == 'edit') {
 	print '<form method="POST" action="' . $_SERVER["PHP_SELF"] . '">';
-	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	print '<input type="hidden" name="token" value="' . newToken() . '">';
 	print '<input type="hidden" name="action" value="update">';
 
 	print '<table class="noborder" width="100%">';
@@ -129,7 +129,7 @@ if ($action == 'edit') {
 		print '<tr class="oddeven"><td>';
 		$tooltiphelp = (($langs->trans($key . 'Tooltip') != $key . 'Tooltip') ? $langs->trans($key . 'Tooltip') : '');
 		print $form->textwithpicto($langs->trans($key), $tooltiphelp);
-		print '</td><td><input name="' . $key . '"  class="flat ' . (empty($val['css']) ? 'minwidth200' : $val['css']) . '" value="' . ($conf->global->$key ?? '') . '"></td></tr>';
+		print '</td><td><input name="' . $key . '"  class="flat ' . (empty($val['css']) ? 'minwidth200' : $val['css']) . '" value="' . getDolGlobalString($key) . '"></td></tr>';
 	}
 	print '</table>';
 
@@ -151,7 +151,7 @@ if ($action == 'edit') {
 			print '<tr class="oddeven"><td>';
 			$tooltiphelp = (($langs->trans($key . 'Tooltip') != $key . 'Tooltip') ? $langs->trans($key . 'Tooltip') : '');
 			print $form->textwithpicto($langs->trans($key), $tooltiphelp);
-			print '</td><td>' . ($conf->global->$key ?? '') . '</td></tr>';
+			print '</td><td>' . getDolGlobalString($key) . '</td></tr>';
 		}
 
 		print '</table>';
@@ -176,13 +176,13 @@ if ($action == 'edit') {
 		print '<tr class="oddeven">';
 		print '<td>' . $langs->trans($desc) . '</td>';
 		print '<td align="center" width="100">';
-		$value = $conf->global->$constant ?? 0;
+		$value = getDolGlobalString($constant);
 		if ($value == 0) {
-			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=activate_' . strtolower($constant) . '&amp;token=' . $_SESSION['newtoken'] . '">';
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=activate_' . strtolower($constant) . '&amp;token=' . newToken() . '">';
 			print img_picto($langs->trans("Disabled"), 'switch_off');
 			print '</a>';
 		} elseif ($value == 1) {
-			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=disable_' . strtolower($constant) . '&amp;token=' . $_SESSION['newtoken'] . '">';
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=disable_' . strtolower($constant) . '&amp;token=' . newToken() . '">';
 			print img_picto($langs->trans("Enabled"), 'switch_on');
 			print '</a>';
 		}
