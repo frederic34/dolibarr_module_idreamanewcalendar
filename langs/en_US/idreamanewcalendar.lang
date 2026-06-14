@@ -37,6 +37,8 @@ IDreamANewCalendarAboutPage = IDreamANewCalendar about page
 IDreamANewCalendarSettings=Settings
 IDreamANewCalendarDontShowAutoEvents=Do not display automatically inserted events
 IDREAMANEWCALENDAR_LIGTHNESS_SWAP=Value to change the event text from black to white (default 150)
+IDREAMANEWCALENDAR_REFRESH_INTERVAL=Auto-refresh interval (seconds, 0 = disabled)
+IDREAMANEWCALENDAR_REFRESH_INTERVALTooltip=Interval in seconds between automatic calendar refreshes. Set to 0 to disable. Default: 300 (5 minutes).
 IDreamANewCalendarUser=User
 IDreamANewCalendarViewAgenda=Diary
 IDreamANewCalendarFree=Available

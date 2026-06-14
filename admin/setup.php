@@ -47,6 +47,10 @@ $arrayofparameters = [
 		'css' => 'minwidth500',
 		'enabled' => 1,
 	],
+	'IDREAMANEWCALENDAR_REFRESH_INTERVAL' => [
+		'css' => 'minwidth100 maxwidth100',
+		'enabled' => 1,
+	],
 ];
 
 // Paramètres ON/OFF est rajouté au paramètre

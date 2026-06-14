@@ -919,6 +919,10 @@ class ActionsIDreamANewCalendar
 						});
 					}
 				});
+				<?php $refreshInterval = getDolGlobalInt('IDREAMANEWCALENDAR_REFRESH_INTERVAL', 300); ?>
+				<?php if ($refreshInterval > 0) { ?>
+				setInterval(function() { ec.refetchEvents(); }, <?php echo (int) $refreshInterval; ?> * 1000);
+				<?php } ?>
 				function createElement(tag, className, html, text) {
 					let el = document.createElement(tag);
 					el.className = className;

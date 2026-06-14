@@ -21,6 +21,8 @@ IDreamANewCalendarSettings = Réglages
 IDreamANewCalendarSetupPage = Page de configuration du module IDreamANewCalendar
 IDreamANewCalendarDontShowAutoEvents=Ne pas afficher les évènements insérés automatiquement
 IDREAMANEWCALENDAR_LIGTHNESS_SWAP=Valeur pour passer le texte de l'évènement du noir au blanc (défaut 150)
+IDREAMANEWCALENDAR_REFRESH_INTERVAL=Intervalle de rafraîchissement automatique (secondes, 0 = désactivé)
+IDREAMANEWCALENDAR_REFRESH_INTERVALTooltip=Délai en secondes entre deux rafraîchissements automatiques de l'agenda. Mettre 0 pour désactiver. Défaut : 300 (5 minutes).
 IDreamANewCalendarAbout = À propos de IDreamANewCalendar
 IDreamANewCalendarAboutPage = Page à propos de IDreamANewCalendar
 
