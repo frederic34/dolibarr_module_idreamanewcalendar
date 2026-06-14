@@ -44,3 +44,5 @@ IDreamANewCalendarCacheTimeOnlyIfRequired=Geben Sie die Quell-Caching-Zeit in Se
 CHECKLASTVERSION_EXTERNALMODULE=Erzwingen der Überprüfung externer Modulversionen (nicht empfohlen, diese Option wurde möglicherweise von einem anderen Modul aktiviert)
 MAIN_STORE_FULL_EVENT_IN_GMT=Ereignisse für einen Tag im GMT-Format erfassen (nicht rückwirkend für bereits erfasste Ereignisse)
 AGENDA_ALL_CALENDARS=Alle Standardbenutzerkalender anzeigen
+IDREAMANEWCALENDAR_REFRESH_INTERVAL=Automatisches Aktualisierungsintervall (Sekunden, 0 = deaktiviert)
+IDREAMANEWCALENDAR_REFRESH_INTERVALTooltip=Verzögerung in Sekunden zwischen zwei automatischen Kalenderaktualisierungen. Auf 0 setzen, um die Funktion zu deaktivieren. Standardwert: 300 (5 Minuten).
