@@ -737,7 +737,7 @@ class ActionsIDreamANewCalendar
 						console.error("Impossible de récupérer les calendriers :", error);
 					}
 				}
-				afficherCalendriers();
+				var calendarsReady = afficherCalendriers();
 				setEventListener();
 				const ec = EventCalendar.create(document.getElementById('ec'), {
 					view: '<?php echo $ecview; ?>',
@@ -785,20 +785,30 @@ class ActionsIDreamANewCalendar
 							events: function(fetchInfo, successCallback, failureCallback) {
 								var ecUrl = '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>';
 								var base = { start: fetchInfo.start.getTime(), end: fetchInfo.end.getTime(), token: token };
-								Promise.all([
-									$.ajax({ method: 'GET', url: ecUrl, dataType: 'json', data: Object.assign({}, base, {
-										action: 'getevents', resourceId: 1,
-										search_user: searchUserId, search_socid: searchSocId,
-										search_all: searchAll, search_actioncode: searchActionCode,
-										search_states: searchStates, projectid: searchProjectId
-									})}),
-									$.ajax({ method: 'GET', url: ecUrl, dataType: 'json', data: Object.assign({}, base, {
-										action: 'getevents', resourceId: 2
-									})})
-								]).then(function(results) {
-									successCallback(results[0].concat(results[1]));
-								}).catch(function() {
-									failureCallback();
+								calendarsReady.then(function() {
+									var fetches = [
+										$.ajax({ method: 'GET', url: ecUrl, dataType: 'json', data: Object.assign({}, base, {
+											action: 'getevents', resourceId: 1,
+											search_user: searchUserId, search_socid: searchSocId,
+											search_all: searchAll, search_actioncode: searchActionCode,
+											search_states: searchStates, projectid: searchProjectId
+										})}),
+										$.ajax({ method: 'GET', url: ecUrl, dataType: 'json', data: Object.assign({}, base, {
+											action: 'getevents', resourceId: 2
+										})})
+									];
+									CalendarList.forEach(function(calendar) {
+										if (calendar.calendarId !== 1 && calendar.calendarId !== 2) {
+											fetches.push($.ajax({ method: 'GET', url: ecUrl, dataType: 'json', data: Object.assign({}, base, {
+												action: 'getevents', resourceId: 3, calendarName: calendar.name
+											})}));
+										}
+									});
+									Promise.all(fetches).then(function(results) {
+										successCallback(results.reduce(function(acc, r) { return acc.concat(r); }, []));
+									}).catch(function() {
+										failureCallback();
+									});
 								});
 							}
 						}
