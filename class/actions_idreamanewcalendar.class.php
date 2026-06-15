@@ -642,7 +642,7 @@ class ActionsIDreamANewCalendar
 					<input class="form-control searchAll" type="text" placeholder="' . $langs->trans('Divers') . '" autocomplete="off">
 				</span>
 				<span id="search-users" class="search-users">
-					<input class="form-control usersAutoComplete" type="text" placeholder="' . $langs->trans('User') . '" autocomplete="off">
+					<select id="usersAutoComplete" class="usersAutoComplete" style="width:100%"></select>
 				</span>';
 
 			if (isModEnabled('societe') && $user->hasRight('societe', 'lire')) {
@@ -952,23 +952,27 @@ class ActionsIDreamANewCalendar
 						}, 500);
 					});
 
-					// --- Filtre utilisateur ---
-					$('.usersAutoComplete').autocomplete({
-						minLength: 2,
-						source: function(request, response) {
-							$.getJSON(ajaxUrl, { action: 'getdolusers', q: request.term, token: token }, function(data) {
-								response($.map(data, function(item) {
-									return { label: item.text, value: item.text, id: item.id };
-								}));
-							});
-						},
-						select: function(event, ui) {
-							searchUserId = ui.item.id;
-							ec.refetchEvents();
-						},
-						change: function(event, ui) {
-							if (!ui.item) { searchUserId = 0; ec.refetchEvents(); }
+					// --- Filtre utilisateur (Select2 AJAX infinite scroll) ---
+					$('.usersAutoComplete').select2({
+						placeholder: '<?php echo dol_escape_js($langs->transnoentities('User')); ?>',
+						allowClear: true,
+						width: '100%',
+						minimumInputLength: 0,
+						ajax: {
+							url: ajaxUrl,
+							dataType: 'json',
+							delay: 250,
+							data: function(params) {
+								return { action: 'getdolusers', q: params.term || '', page: params.page || 1, token: token };
+							},
+							processResults: function(data) {
+								return { results: data.results, pagination: { more: data.pagination.more } };
+							}
 						}
+					});
+					$('.usersAutoComplete').on('change', function() {
+						searchUserId = $(this).val() || 0;
+						ec.refetchEvents();
 					});
 					// --- Bouton réinitialiser tous les filtres ---
 					$('#clear-all-filters').on('click', function() {
@@ -979,7 +983,7 @@ class ActionsIDreamANewCalendar
 						searchProjectId = 0;
 						searchActionCode = '';
 						$('.searchAll').val('');
-						$('.usersAutoComplete').val('');
+						$('.usersAutoComplete').val(null).trigger('change');
 						$('.customersAutoComplete').val('');
 						$('.projectsAutoComplete').val('');
 						$('#project_id').val(0);

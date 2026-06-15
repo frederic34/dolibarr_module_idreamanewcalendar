@@ -311,11 +311,13 @@ switch ($action) {
 		print json_encode($response);
 		break;
 	case 'getdolusers':
-		$response = [];
 		$filterkey = GETPOST('q', 'alphanohtml');
 		$noactive = GETPOSTINT('noactive');
 		$force_entity = GETPOSTINT('force_entity');
-		$limit = 100;
+		$page = max(1, GETPOSTINT('page'));
+		$pageSize = 20;
+		$offset = ($page - 1) * $pageSize;
+		$results = [];
 
 		if ($user->hasRight('agenda', 'allactions', 'read')) {
 			$sql = "SELECT DISTINCT u.rowid, u.lastname as lastname, u.firstname, u.statut, u.login, u.admin, u.entity";
@@ -349,23 +351,28 @@ switch ($action) {
 				$sql .= natural_search(['u.firstname', 'u.lastname'], $filterkey);
 			}
 			if (!getDolGlobalString('MAIN_FIRSTNAME_NAME_POSITION')) {
-				// MAIN_FIRSTNAME_NAME_POSITION is 0 means firstname+lastname
 				$sql .= " ORDER BY u.firstname ASC";
 			} else {
 				$sql .= " ORDER BY u.lastname ASC";
 			}
-			// Build output string
+			$sql .= $db->plimit($pageSize + 1, $offset);
 			$resql = $db->query($sql);
+			$count = 0;
 			while ($resql && $obj = $db->fetch_object($resql)) {
-				$label = $obj->firstname . ' ' . $obj->lastname;
-				$response[] = [
-					'id' => $obj->rowid,
-					'value' => $obj->rowid,
-					'text' => $label,
-				];
+				if ($count < $pageSize) {
+					$label = trim($obj->firstname . ' ' . $obj->lastname);
+					$results[] = [
+						'id' => $obj->rowid,
+						'text' => $label,
+					];
+				}
+				$count++;
 			}
 		}
-		print json_encode($response);
+		print json_encode([
+			'results' => $results,
+			'pagination' => ['more' => $count > $pageSize],
+		]);
 		break;
 	case 'getdolgroups':
 		$response = [];
