@@ -650,7 +650,7 @@ class ActionsIDreamANewCalendar
 				print '    <input class="form-control customersAutoComplete" type="text" placeholder="' . $langs->trans('ThirdParty') . '" autocomplete="off">';
 				print '</span>';
 				print '<span id="search-states" class="search-states">';
-				print '    <select class="statesAutoComplete" multiple title="' . $langs->trans('StateShort') . '"></select>';
+				print '    <select id="statesAutoComplete" class="statesAutoComplete" multiple title="' . $langs->trans('StateShort') . '"></select>';
 				print '</span>';
 			}
 			if (isModEnabled('projet') && $user->hasRight('projet', 'lire')) {
@@ -662,7 +662,7 @@ class ActionsIDreamANewCalendar
 			// select types events + bouton réinitialiser
 			print '
 				<span id="search-actioncode" class="search-actioncode">
-					<select class="actioncodeAutoComplete" multiple title="' . $langs->trans('ActionType') . '"></select>
+					<select id="actioncodeAutoComplete" class="actioncodeAutoComplete" multiple title="' . $langs->trans('ActionType') . '"></select>
 				</span>
 				<span class="search-clear">
 					<button type="button" class="btn btn-default btn-sm" id="clear-all-filters" title="' . $langs->trans('Reset') . '">
