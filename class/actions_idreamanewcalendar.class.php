@@ -783,49 +783,22 @@ class ActionsIDreamANewCalendar
 					},
 					eventSources: [{
 							events: function(fetchInfo, successCallback, failureCallback) {
-								$.ajax({
-									method: 'GET',
-									url: '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>',
-									dataType: 'json',
-									data: {
-										start: fetchInfo.start.getTime(),
-										end: fetchInfo.end.getTime(),
-										action: 'getevents',
-										resourceId: 1,
-										token: token,
-										search_user: searchUserId,
-										search_socid: searchSocId,
-										search_all: searchAll,
-										search_actioncode: searchActionCode,
-										search_states: searchStates,
-										projectid: searchProjectId
-									},
-									success: function(response) {
-										// normalize entries
-										successCallback(response);
-									}
-								});
-							}
-						},
-						{
-							events: function(fetchInfo, successCallback, failureCallback) {
-								$.ajax({
-									method: 'GET',
-									url: '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>',
-									dataType: 'json',
-									data: {
-										start: fetchInfo.start.getTime(),
-										// startStr: fetchInfo.startStr,
-										end: fetchInfo.end.getTime(),
-										// endStr: fetchInfo.endStr,
-										action: 'getevents',
-										resourceId: 2,
-										token: token
-									},
-									success: function(response) {
-										// normalize entries
-										successCallback(response);
-									}
+								var ecUrl = '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>';
+								var base = { start: fetchInfo.start.getTime(), end: fetchInfo.end.getTime(), token: token };
+								Promise.all([
+									$.ajax({ method: 'GET', url: ecUrl, dataType: 'json', data: Object.assign({}, base, {
+										action: 'getevents', resourceId: 1,
+										search_user: searchUserId, search_socid: searchSocId,
+										search_all: searchAll, search_actioncode: searchActionCode,
+										search_states: searchStates, projectid: searchProjectId
+									})}),
+									$.ajax({ method: 'GET', url: ecUrl, dataType: 'json', data: Object.assign({}, base, {
+										action: 'getevents', resourceId: 2
+									})})
+								]).then(function(results) {
+									successCallback(results[0].concat(results[1]));
+								}).catch(function() {
+									failureCallback();
 								});
 							}
 						}
