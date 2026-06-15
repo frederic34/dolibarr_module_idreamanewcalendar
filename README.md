@@ -2,6 +2,8 @@
 
 Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dolibarr.org) basé sur la bibliothèque [EventCalendar](https://github.com/vkurko/calendar). Il remplace les vues Mois/Semaine/Jour de l'agenda natif par un calendrier interactif unique avec gestion de sources externes ICS et filtres avancés.
 
+![Vue semaine](img/screenshots/vue-semaine.png)
+
 ---
 
 ## Sommaire
@@ -78,6 +80,8 @@ Ensuite, activez le module dans **Accueil → Configuration → Modules**.
 
 Accédez à la configuration via **Accueil → Configuration → Modules → IDreamANewCalendar → Configurer**.
 
+![Page de configuration](img/screenshots/config-general.png)
+
 ### Paramètres généraux
 
 | Constante | Type | Description | Défaut |
@@ -92,6 +96,8 @@ Accédez à la configuration via **Accueil → Configuration → Modules → IDr
 
 Onglet **Sites externes** de la configuration admin. Permet de définir jusqu'à `AGENDA_EXT_NB` (défaut : 6) flux ICS globaux, visibles par tous les utilisateurs.
 
+![Calendriers externes admin](img/screenshots/config-ext-calendars.png)
+
 | Champ | Constante | Description |
 |---|---|---|
 | Nom | `AGENDA_EXT_NAME{i}` | Nom affiché dans la liste des calendriers |
@@ -105,7 +111,9 @@ Onglet **Sites externes** de la configuration admin. Permet de définir jusqu'à
 
 ### Calendriers externes (par utilisateur)
 
-Chaque utilisateur peut définir ses propres flux ICS via l'onglet **Calendriers externes** de sa fiche utilisateur. Les constantes sont stockées par utilisateur avec le pattern `AGENDA_EXT_{FIELD}_{uid}_{i}`.
+Chaque utilisateur peut définir ses propres flux ICS via l'onglet **Calendriers externes** de sa fiche utilisateur.
+
+![Calendriers externes utilisateur](img/screenshots/config-user-ext-calendars.png) Les constantes sont stockées par utilisateur avec le pattern `AGENDA_EXT_{FIELD}_{uid}_{i}`.
 
 | Champ | Description |
 |---|---|
@@ -132,6 +140,22 @@ Le module remplace les trois onglets natifs de l'agenda (Mois, Semaine, Jour) pa
 | Liste | `listWeek` | Liste des événements de la semaine |
 
 La vue par défaut est contrôlée par la préférence utilisateur `AGENDA_DEFAULT_VIEW`. Le premier jour de la semaine est configurable via `MAIN_START_WEEK` (défaut : 1 = lundi).
+
+**Vue semaine**
+
+![Vue semaine](img/screenshots/vue-semaine.png)
+
+**Vue mois**
+
+![Vue mois](img/screenshots/vue-mois.png)
+
+**Vue jour**
+
+![Vue jour](img/screenshots/vue-jour.png)
+
+**Vue liste**
+
+![Vue liste](img/screenshots/vue-liste.png)
 
 ### Filtres et recherche
 
@@ -166,6 +190,8 @@ Les flux ICS (globaux et personnels) sont chargés via l'API AJAX et analysés a
 - Flux personnels : `ical-e{entity}-u{uid}-{calendarId}.cache` (défaut 60 min).
 
 La liste des calendriers disponibles est affichée dans le panneau latéral gauche. Chaque calendrier peut être affiché ou masqué indépendamment via des cases à cocher.
+
+![Panneau des calendriers](img/screenshots/panneau-calendriers.png)
 
 ### Actualisation automatique
 
@@ -224,7 +250,7 @@ idreamanewcalendar/
 | Propriété | Valeur |
 |---|---|
 | ID de module (`numero`) | `14011966` |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Famille | `agenda` |
 | PHP minimum | 7.4 |
 | Dolibarr minimum | 20.0 |
