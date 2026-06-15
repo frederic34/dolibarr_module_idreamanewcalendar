@@ -265,37 +265,16 @@ header('Cache-Control: max-age=10800, public, must-revalidate');
   line-height: 30px;
   vertical-align: middle;
 }
-.search-users {
-  padding: 0px;
-  display: inline-block;
-  line-height: 30px;
-  vertical-align: middle;
-}
-.search-customers {
-  padding: 0 8px;
-  display: inline-block;
-  line-height: 30px;
-  vertical-align: middle;
-}
-.search-states {
-  padding: 0 8px;
-  display: inline-block;
-  line-height: 30px;
-  vertical-align: middle;
-  width: 220px;
-}
-.search-actioncode {
-  padding: 0 8px;
-  display: inline-block;
-  line-height: 30px;
-  vertical-align: middle;
-  width: 220px;
-}
+.search-users,
+.search-customers,
+.search-states,
+.search-actioncode,
 .search-projects {
-  padding: 0 8px;
+  padding: 0 4px;
   display: inline-block;
   line-height: 30px;
   vertical-align: middle;
+  width: 200px;
 }
 
 #renderRange {
