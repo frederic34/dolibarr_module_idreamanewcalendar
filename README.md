@@ -45,7 +45,6 @@ Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dol
 | PHP | 7.4 |
 | Dolibarr | 20.0 |
 | Module **Agenda** | activé |
-| Module **Prune** (`modPrune`) | activé (requis) |
 
 **Incompatibilité :** Ce module ne peut pas coexister avec le module **fullcalendar** (`modfullcalendar`). L'un doit être désactivé avant d'activer l'autre.
 
