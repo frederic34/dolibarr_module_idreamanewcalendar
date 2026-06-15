@@ -858,7 +858,29 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 			// $event->fetch_optionals();
 			$event->fetch_userassigned();
 			$event->color = $obj->color ? '#' . $obj->color : ''; // color from user
-			$event->type_color = $obj->type_color; // color from c_actioncomm
+			// Color from c_actioncomm, with fallback palette when not set in admin
+			static $defaultTypeColors = [
+				'AC_TEL'         => '#4CAF50',
+				'AC_FAX'         => '#9E9E9E',
+				'AC_PROP'        => '#FF9800',
+				'AC_EMAIL'       => '#2196F3',
+				'AC_RDV'         => '#F44336',
+				'AC_EMAIL_IN'    => '#03A9F4',
+				'AC_COM'         => '#9C27B0',
+				'AC_FAC'         => '#FFC107',
+				'AC_SHIP'        => '#009688',
+				'AC_INT'         => '#FF5722',
+				'AC_SUP_ORD'     => '#8BC34A',
+				'AC_SUP_INV'     => '#CDDC39',
+				'AC_OTH_AUTO'    => '#B2B2B2',
+				'AC_OTH'         => '#607D8B',
+				'AC_EO_ONLINECONF'  => '#00BCD4',
+				'AC_EO_INDOORCONF'  => '#3F51B5',
+				'AC_EO_ONLINEBOOTH' => '#E91E63',
+				'AC_EO_INDOORBOOTH' => '#673AB7',
+			];
+			$event->type_color = $obj->type_color
+				?: ($defaultTypeColors[$obj->type_code] ?? '#607D8B');
 			// $event->type_picto = $obj->type_picto;
 
 			$isallday = $event->fulldayevent ? true : false;
@@ -909,8 +931,8 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 				'startEditable' => $isEditable,
 				'durationEditable' => $isEditable,
 				'allDay' => $isallday,
-				// color : The schedule text color (black or white)
-				'textColor' => ($obj->color != '' && isDarkColor($obj->color)) ? '#ffffff' : '#000000',
+				// color : The schedule text color (black or white based on background)
+				'textColor' => isDarkColor($event->type_color) ? '#ffffff' : '#000000',
 				// backgroundColor : The schedule background color
 				'backgroundColor' => $event->type_color,
 				// raw : The user data
