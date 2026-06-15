@@ -1,6 +1,6 @@
 # I DREAM A NEW CALENDAR — Module Dolibarr
 
-Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dolibarr.org) basé sur la bibliothèque [EventCalendar](https://github.com/vkurko/calendar). Il remplace les vues Mois/Semaine/Jour de l'agenda natif par un calendrier interactif unique avec gestion de sources externes ICS, filtres avancés et édition rapide des événements.
+Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dolibarr.org) basé sur la bibliothèque [EventCalendar](https://github.com/vkurko/calendar). Il remplace les vues Mois/Semaine/Jour de l'agenda natif par un calendrier interactif unique avec gestion de sources externes ICS, filtres avancés, édition et création rapide des événements.
 
 ![Vue semaine](img/screenshots/vue-semaine.png)
 
@@ -17,6 +17,8 @@ Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dol
 - [Fonctionnalités](#fonctionnalités)
   - [Vue calendrier](#vue-calendrier)
   - [Filtres et recherche](#filtres-et-recherche)
+  - [Masquage des calendriers](#masquage-des-calendriers)
+  - [Création rapide par sélection de plage](#création-rapide-par-sélection-de-plage)
   - [Édition rapide par popup](#édition-rapide-par-popup)
   - [Glisser-déposer et redimensionnement](#glisser-déposer-et-redimensionnement)
   - [Anniversaires](#anniversaires)
@@ -177,9 +179,34 @@ Un panneau de filtres est affiché au-dessus du calendrier. Tous les selects de 
 
 Les selects Tiers et Projets chargent les résultats page par page (20 par page) sans minimum de caractères requis — la liste s'ouvre immédiatement au clic. Un bouton réinitialiser (gomme) remet tous les filtres à zéro.
 
+### Masquage des calendriers
+
+Chaque calendrier affiché dans le panneau gauche peut être masqué ou réaffiché individuellement en cliquant sur sa case à cocher. La case **Tous** permet de tout masquer ou tout réafficher d'un coup.
+
+Le masquage est instantané (injection CSS `display:none` sur les éléments portant la classe `ec-cal-{id}`) — aucun rechargement des données n'est nécessaire.
+
+![Calendrier masqué](img/screenshots/calendrier-masque.png)
+
+### Création rapide par sélection de plage
+
+Cliquer-glisser sur une plage horaire de la grille ouvre un dialogue de création avec la date et l'heure pré-remplies.
+
+![Popup de création](img/screenshots/popup-creation.png)
+
+| Champ | Description |
+|---|---|
+| Libellé | Sujet de l'événement |
+| Date début / Date fin | Pré-remplies d'après la sélection |
+| Journée | Case à cocher pour un événement toute la journée |
+| Lieu | Adresse ou salle |
+| Pourcentage | Avancement |
+| Note | Note privée |
+
+Boutons : **Ajouter** (POST `createaction`), **Clôturer**.
+
 ### Édition rapide par popup
 
-Un clic sur un événement ouvre une fenêtre de dialogue jQuery UI.
+Un clic sur un événement existant ouvre une fenêtre de dialogue jQuery UI.
 
 ![Popup d'édition](img/screenshots/popup-edition.png)
 
@@ -322,7 +349,8 @@ Le hook `beforeAgenda` :
    - `successCallback` n'est appelé qu'une seule fois avec le résultat fusionné, sans scintillement.
 6. Configure le drag-and-drop et le redimensionnement avec protection des événements en lecture seule.
 7. Configure le popup d'édition jQuery UI via `ec.setOption('eventClick', ...)`.
-8. Configure l'auto-refresh via `setInterval`.
+8. Configure le popup de création via `ec.setOption('select', ...)` : sélection d'une plage horaire ouvre un dialogue pré-rempli.
+9. Configure l'auto-refresh via `setInterval`.
 
 ### Triggers
 
@@ -370,7 +398,8 @@ CREATE TABLE llx_actioncomm_deleted(
 | `getdeletedevents` | GET | Retourne les IDs des événements supprimés depuis moins de 3 h. |
 | `getaction` | GET | Retourne les détails complets d'un événement Dolibarr pour le popup d'édition (paramètre `id`). |
 | `putevent` | POST | Met à jour les dates et le lieu d'un événement (drag-and-drop / resize). |
-| `updateaction` | POST | Met à jour les champs d'un événement depuis le popup (libellé, dates, lieu, note, pourcentage). |
+| `createaction` | POST | Crée un nouvel événement `AC_OTH` depuis le popup de création (libellé, dates, lieu, note, pourcentage). |
+| `updateaction` | POST | Met à jour les champs d'un événement depuis le popup d'édition (libellé, dates, lieu, note, pourcentage). |
 | `postevent` | POST | Crée un nouvel événement de type `AC_OTH`. |
 | `deleteevent` | POST | Supprime un événement. |
 | `getcalendars` | GET | Retourne la liste de tous les calendriers disponibles (Dolibarr, anniversaires, ICS). |
