@@ -43,3 +43,4 @@ AGENDA_ALL_CALENDARS=Переглянути всі календарі корис
 IDREAMANEWCALENDAR_REFRESH_INTERVAL=Інтервал автоматичного оновлення (секунди, 0 = вимкнено)
 IDREAMANEWCALENDAR_REFRESH_INTERVALTooltip=Затримка в секундах між двома автоматичними оновленнями календаря. Встановіть значення 0, щоб вимкнути. Значення за замовчуванням: 300 (5 хвилин).
 ListWeek=Щотижневий список
+IDreamANewCalendarOpenCard=Див. інформаційний лист

@@ -49,3 +49,4 @@ AGENDA_ALL_CALENDARS=Visualizza tutti i calendari utente predefiniti
 IDREAMANEWCALENDAR_REFRESH_INTERVAL=Intervallo di aggiornamento automatico (secondi, 0 = disabilitato)
 IDREAMANEWCALENDAR_REFRESH_INTERVALTooltip=Ritardo in secondi tra due aggiornamenti automatici del calendario. Impostare su 0 per disabilitare. Valore predefinito: 300 (5 minuti).
 ListWeek=Elenco settimanale
+IDreamANewCalendarOpenCard=Consultare la scheda informativa.

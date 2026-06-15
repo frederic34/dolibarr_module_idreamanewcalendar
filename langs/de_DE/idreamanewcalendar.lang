@@ -47,3 +47,4 @@ AGENDA_ALL_CALENDARS=Alle Standardbenutzerkalender anzeigen
 IDREAMANEWCALENDAR_REFRESH_INTERVAL=Automatisches Aktualisierungsintervall (Sekunden, 0 = deaktiviert)
 IDREAMANEWCALENDAR_REFRESH_INTERVALTooltip=Verzögerung in Sekunden zwischen zwei automatischen Kalenderaktualisierungen. Auf 0 setzen, um die Funktion zu deaktivieren. Standardwert: 300 (5 Minuten).
 ListWeek=Wöchentliche Liste
+IDreamANewCalendarOpenCard=Siehe das Informationsblatt
