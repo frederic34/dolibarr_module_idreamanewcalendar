@@ -857,7 +857,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 				'start' => dol_print_date($datep, "%Y-%m-%dT%H:%M:%S+00:00"),
 				'end' => dol_print_date($datep + 86400, "%Y-%m-%dT%H:%M:%S+00:00"),
 				// birthdays are readonly
-				'editable' => false,
+				'startEditable' => false, 'durationEditable' => false,
 				'allDay' => true,
 				// color : The schedule text color (birthday events always use dark background #555555)
 				'textColor' => '#ffffff',
@@ -1050,7 +1050,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 						'start' => $dtstart->format('Y-m-d H:i:sP'),
 						'end' => $dtend->format('Y-m-d H:i:sP'),
 						// icals are readonly
-						'editable' => false,
+						'startEditable' => false, 'durationEditable' => false,
 						'allDay' => $fulldayevent,
 						// color : The schedule text color
 						'textColor' => isDarkColor($colorcal) ? '#ffffff' : '#000000',

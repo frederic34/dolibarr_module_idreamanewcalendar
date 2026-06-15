@@ -884,6 +884,7 @@ class ActionsIDreamANewCalendar
 					},
 					eventResize: function(info) {
 						var event = info.event;
+						if (event.durationEditable === false) { info.revert(); return; }
 						$.ajax({
 							method: 'POST',
 							url: '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>',
@@ -901,6 +902,7 @@ class ActionsIDreamANewCalendar
 					},
 					eventDrop: function(info) {
 						var event = info.event;
+						if (event.startEditable === false) { info.revert(); return; }
 						$.ajax({
 							method: 'POST',
 							url: '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>',
