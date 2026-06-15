@@ -180,13 +180,13 @@ if ($action == 'edit') {
 		print '<tr class="oddeven">';
 		print '<td>' . $langs->trans($desc) . '</td>';
 		print '<td align="center" width="100">';
-		$value = getDolGlobalString($constant);
+		$value = getDolGlobalInt($constant);
 		if ($value == 0) {
-			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=activate_' . strtolower($constant) . '&amp;token=' . newToken() . '">';
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=activate_' . strtolower($constant) . '&token=' . newToken() . '">';
 			print img_picto($langs->trans("Disabled"), 'switch_off');
 			print '</a>';
 		} elseif ($value == 1) {
-			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=disable_' . strtolower($constant) . '&amp;token=' . newToken() . '">';
+			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=disable_' . strtolower($constant) . '&token=' . newToken() . '">';
 			print img_picto($langs->trans("Enabled"), 'switch_on');
 			print '</a>';
 		}

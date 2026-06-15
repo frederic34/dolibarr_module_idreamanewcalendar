@@ -91,21 +91,16 @@ switch ($action) {
 			$datestart = json_decode(GETPOST('start', 'none'));
 			$dateend = json_decode(GETPOST('end', 'none'));
 			$offset = json_decode(GETPOST('offset', 'none'));
-			$offset_start = 0;
-			$date_start = \DateTime::createFromFormat('Y-m-d\TH:i:s.v\Z', $datestart->_date, $timeZone);
-			if ($date_start !== false) {
-				$offset_start = $timeZone->getOffset($date_start);
-			}
-			$offset_end = 0;
-			$date_end = \DateTime::createFromFormat('Y-m-d\TH:i:s.v\Z', $dateend->_date, $timeZone);
-			if ($date_end !== false) {
-				$offset_end = $timeZone->getOffset($date_end);
-			}
-			// dol_syslog('updated events ajax REQUEST event ' . print_r($updatedevent, true), LOG_WARNING);
-			// dol_syslog('updated events ajax REQUEST datestart '.print_r($datestart, true), LOG_WARNING);
-			// dol_syslog('updated events ajax REQUEST dateend '.print_r($dateend, true), LOG_WARNING);
-			// dol_syslog('updated events ajax REQUEST offset '.print_r(((int) $offset * 60), true), LOG_WARNING);
-			// dol_syslog('updated events ajax REQUEST start '.strtotime($datestart->_date), LOG_WARNING);
+			// Parse the UTC ISO strings from the browser and compute the server timezone offset
+			// so we can store dates in Dolibarr's format (local time encoded as UTC).
+			$startObj = new DateTime($datestart->_date, new DateTimeZone('UTC'));
+			$startObj->setTimezone($timeZone);
+			$offset_start = $startObj->getOffset();
+
+			$endObj = new DateTime($dateend->_date, new DateTimeZone('UTC'));
+			$endObj->setTimezone($timeZone);
+			$offset_end = $endObj->getOffset();
+
 			$action = new ActionComm($db);
 			$action->fetch($updatedevent->id);
 			$action->fetch_optionals();
@@ -114,8 +109,10 @@ switch ($action) {
 			$action->oldcopy = clone $action;
 			$action->location = $updatedevent->location;
 			$action->fulldayevent = $updatedevent->isAllDay ? 1 : 0;
-			$action->datep = strtotime($datestart->_date) - ((int) $offset * 60);
-			$action->datef = strtotime($dateend->_date) - ((int) $offset * 60);
+			// toISOString() gives real UTC; adding the server offset converts to Dolibarr's
+			// "local time stored as UTC" format expected by getEvents/ActionComm.
+			$action->datep = strtotime($datestart->_date) + $offset_start;
+			$action->datef = strtotime($dateend->_date) + $offset_end;
 			$res = $action->update($user);
 			if ($res < 0) {
 				print json_encode([]);
@@ -349,7 +346,7 @@ switch ($action) {
 				$sql .= " AND u.statut <> 0";
 			}
 			if (!empty($filterkey)) {
-				$sql .= natural_search(['u.firstname', 'u.lastname'], $db->escape($filterkey));
+				$sql .= natural_search(['u.firstname', 'u.lastname'], $filterkey);
 			}
 			if (!getDolGlobalString('MAIN_FIRSTNAME_NAME_POSITION')) {
 				// MAIN_FIRSTNAME_NAME_POSITION is 0 means firstname+lastname
@@ -646,10 +643,8 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 		}
 		$sql .= ' WHERE  a.entity IN (' . getEntity('agenda', 1) . ')';
 		if (!empty($actioncode)) {
-			// verifier avec le code du dictionaire
-			// a.code au lieu de ca.code
-			// $sql .= " AND ca.code IN ('".implode("','", $actioncode)."')";
-			//$sql .= " AND a.code IN ('" . implode("','", $actioncode) . "')";
+			$escapedCodes = array_map(function ($code) use ($db) { return "'" . $db->escape($code) . "'"; }, $actioncode);
+			$sql .= " AND ca.code IN (" . implode(',', $escapedCodes) . ")";
 		}
 		if (getDolGlobalInt('EVENT_CALENDAR_DONT_SHOW_AUTO_EVENTS') && strpos(implode(',', $actioncode), 'AC_OTH_AUTO') === false) {
 			// a.code au lieu de ca.code
@@ -667,11 +662,12 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 			$sql .= ' AND a.fk_soc = ' . $socid;
 		}
 		if (!empty($search_states)) {
-			$sql .= ' AND (s.fk_departement IN (' . $db->escape($search_states) . ') OR sp.fk_departement IN (' . $db->escape($search_states) . ')';
+			$stateIds = implode(',', array_filter(array_map('intval', explode(',', $search_states))));
+			$sql .= ' AND (s.fk_departement IN (' . $stateIds . ') OR sp.fk_departement IN (' . $stateIds . ')';
 			// on recherche les codes des départements...
 			$sqlcode = "SELECT d.rowid as id, d.code_departement as code";
 			$sqlcode .= " FROM " . MAIN_DB_PREFIX . "c_departements as d";
-			$sqlcode .= " WHERE d.rowid IN (" . $db->escape($search_states) . ")";
+			$sqlcode .= " WHERE d.rowid IN (" . $stateIds . ")";
 			$resqlcode = $db->query($sqlcode);
 			while ($resqlcode && $objc = $db->fetch_object($resqlcode)) {
 				$sql .= ' OR s.zip LIKE "' . $objc->code . '%"';

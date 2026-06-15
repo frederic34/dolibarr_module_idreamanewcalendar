@@ -290,9 +290,11 @@ class ActionsIDreamANewCalendar
 				return 0;
 			}
 			$arrayofjs = [
+				'/includes/jquery/plugins/select2/dist/js/select2.full.min.js',
 				'/idreamanewcalendar/lib/event-calendar/event-calendar.min.js',
 			];
 			$arrayofcss = [
+				'/includes/jquery/plugins/select2/dist/css/select2.min.css',
 				'/idreamanewcalendar/lib/event-calendar/event-calendar.min.css',
 				'/idreamanewcalendar/css/idreamanewcalendar.css.php'
 			];
@@ -641,11 +643,6 @@ class ActionsIDreamANewCalendar
 				</span>
 				<span id="search-users" class="search-users">
 					<input class="form-control usersAutoComplete" type="text" placeholder="' . $langs->trans('User') . '" autocomplete="off">
-				</span>
-				<span id="clear-search-user" class="search-clear">
-					<button type="button" class="btn btn-default btn-sm search-clear" data-action="clear-search-user">
-						<i class="calendar-icon ic-arrow-cancel" data-action="clear-search-user"></i>
-					</button>
 				</span>';
 
 			if (isModEnabled('societe') && $user->hasRight('societe', 'lire')) {
@@ -653,7 +650,7 @@ class ActionsIDreamANewCalendar
 				print '    <input class="form-control customersAutoComplete" type="text" placeholder="' . $langs->trans('ThirdParty') . '" autocomplete="off">';
 				print '</span>';
 				print '<span id="search-states" class="search-states">';
-				print '    <select class="statesAutoComplete" multiple type="text" title="' . $langs->trans('StateShort') . '"></select>';
+				print '    <select class="statesAutoComplete" multiple title="' . $langs->trans('StateShort') . '"></select>';
 				print '</span>';
 			}
 			if (isModEnabled('projet') && $user->hasRight('projet', 'lire')) {
@@ -662,10 +659,15 @@ class ActionsIDreamANewCalendar
 				print '    <input id="project_id" name="project_id" type="hidden">';
 				print '</span>';
 			}
-			// select types events
+			// select types events + bouton réinitialiser
 			print '
 				<span id="search-actioncode" class="search-actioncode">
-					<select class="actioncodeAutoComplete" multiple type="text" title="' . $langs->trans('ActionType') . '"></select>
+					<select class="actioncodeAutoComplete" multiple title="' . $langs->trans('ActionType') . '"></select>
+				</span>
+				<span class="search-clear">
+					<button type="button" class="btn btn-default btn-sm" id="clear-all-filters" title="' . $langs->trans('Reset') . '">
+						<i class="fa fa-eraser"></i>
+					</button>
 				</span>
 			</div>';
 			// CALENDAR
@@ -676,6 +678,12 @@ class ActionsIDreamANewCalendar
 			</div>
 			<script>
 				const token = '<?php echo newToken(); ?>';
+				let searchUserId = 0;
+				let searchSocId = 0;
+				let searchAll = '';
+				let searchStates = '';
+				let searchProjectId = 0;
+				let searchActionCode = '';
 				const buttonText = {
 					today: '<?php echo dol_escape_js($langs->transnoentities('Today')); ?>',
 					dayGridMonth: '<?php echo dol_escape_js($langs->transnoentities('ViewCal')); ?>',
@@ -778,12 +786,16 @@ class ActionsIDreamANewCalendar
 									dataType: 'json',
 									data: {
 										start: fetchInfo.start.getTime(),
-										// startStr: fetchInfo.startStr,
 										end: fetchInfo.end.getTime(),
-										// endStr: fetchInfo.endStr,
 										action: 'getevents',
 										resourceId: 1,
-										token: token
+										token: token,
+										search_user: searchUserId,
+										search_socid: searchSocId,
+										search_all: searchAll,
+										search_actioncode: searchActionCode,
+										search_states: searchStates,
+										projectid: searchProjectId
 									},
 									success: function(response) {
 										// normalize entries
@@ -923,6 +935,136 @@ class ActionsIDreamANewCalendar
 				<?php if ($refreshInterval > 0) { ?>
 				setInterval(function() { ec.refetchEvents(); }, <?php echo (int) $refreshInterval; ?> * 1000);
 				<?php } ?>
+				$(function() {
+					var ajaxUrl = '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>';
+
+					// --- Recherche libre (debounce 500 ms) ---
+					var debounceTimer;
+					$('.searchAll').on('input', function() {
+						clearTimeout(debounceTimer);
+						var val = $(this).val();
+						debounceTimer = setTimeout(function() {
+							searchAll = val;
+							ec.refetchEvents();
+						}, 500);
+					});
+
+					// --- Filtre utilisateur ---
+					$('.usersAutoComplete').autocomplete({
+						minLength: 2,
+						source: function(request, response) {
+							$.getJSON(ajaxUrl, { action: 'getdolusers', q: request.term, token: token }, function(data) {
+								response($.map(data, function(item) {
+									return { label: item.text, value: item.text, id: item.id };
+								}));
+							});
+						},
+						select: function(event, ui) {
+							searchUserId = ui.item.id;
+							ec.refetchEvents();
+						},
+						change: function(event, ui) {
+							if (!ui.item) { searchUserId = 0; ec.refetchEvents(); }
+						}
+					});
+					// --- Bouton réinitialiser tous les filtres ---
+					$('#clear-all-filters').on('click', function() {
+						searchUserId = 0;
+						searchSocId = 0;
+						searchAll = '';
+						searchStates = '';
+						searchProjectId = 0;
+						searchActionCode = '';
+						$('.searchAll').val('');
+						$('.usersAutoComplete').val('');
+						$('.customersAutoComplete').val('');
+						$('.projectsAutoComplete').val('');
+						$('#project_id').val(0);
+						$('.statesAutoComplete').val(null).trigger('change');
+						$('.actioncodeAutoComplete').val(null).trigger('change');
+						ec.refetchEvents();
+					});
+
+					// --- Filtre tiers ---
+					$('.customersAutoComplete').autocomplete({
+						minLength: 2,
+						source: function(request, response) {
+							$.getJSON(ajaxUrl, { action: 'getcustomers', q: request.term, token: token }, function(data) {
+								response($.map(data, function(item) {
+									return { label: item.text, value: item.text, id: item.id };
+								}));
+							});
+						},
+						select: function(event, ui) {
+							searchSocId = ui.item.id;
+							ec.refetchEvents();
+						},
+						change: function(event, ui) {
+							if (!ui.item) { searchSocId = 0; ec.refetchEvents(); }
+						}
+					});
+
+					// --- Filtre projet ---
+					$('.projectsAutoComplete').autocomplete({
+						minLength: 2,
+						source: function(request, response) {
+							$.getJSON(ajaxUrl, { action: 'getprojects', q: request.term, token: token }, function(data) {
+								response($.map(data, function(item) {
+									return { label: item.text, value: item.text, id: item.value };
+								}));
+							});
+						},
+						select: function(event, ui) {
+							searchProjectId = ui.item.id;
+							$('#project_id').val(searchProjectId);
+							ec.refetchEvents();
+						},
+						change: function(event, ui) {
+							if (!ui.item) { searchProjectId = 0; $('#project_id').val(0); ec.refetchEvents(); }
+						}
+					});
+
+					// --- Filtre départements (multi-select select2) : peuplement + écoute ---
+					$('.statesAutoComplete').select2({
+						placeholder: '<?php echo dol_escape_js($langs->trans('StateShort')); ?>',
+						allowClear: true,
+						width: '100%'
+					});
+					$.getJSON(ajaxUrl, { action: 'getstates', token: token }, function(data) {
+						var $sel = $('.statesAutoComplete');
+						$.each(data, function(i, item) {
+							$sel.append(new Option(item.label, item.id, false, false));
+						});
+						$sel.trigger('change.select2');
+					});
+					$('.statesAutoComplete').on('change', function() {
+						var selected = $(this).val();
+						searchStates = selected ? selected.join(',') : '';
+						ec.refetchEvents();
+					});
+
+					// --- Filtre types d'action (multi-select select2) : peuplement + écoute ---
+					$('.actioncodeAutoComplete').select2({
+						placeholder: '<?php echo dol_escape_js($langs->trans('ActionType')); ?>',
+						allowClear: true,
+						width: '100%'
+					});
+					$.getJSON(ajaxUrl, { action: 'gettypeactions', token: token }, function(data) {
+						var $sel = $('.actioncodeAutoComplete');
+						$.each(data, function(i, item) {
+							$sel.append(new Option(item.label, item.code, false, item.selected));
+						});
+						$sel.trigger('change.select2');
+						var presel = $sel.val();
+						searchActionCode = presel ? presel.join(',') : '';
+						if (searchActionCode) { ec.refetchEvents(); }
+					});
+					$('.actioncodeAutoComplete').on('change', function() {
+						var selected = $(this).val();
+						searchActionCode = selected ? selected.join(',') : '';
+						ec.refetchEvents();
+					});
+				});
 				function createElement(tag, className, html, text) {
 					let el = document.createElement(tag);
 					el.className = className;
