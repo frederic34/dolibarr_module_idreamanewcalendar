@@ -1026,7 +1026,7 @@ class ActionsIDreamANewCalendar
 
 					// --- Filtre départements (multi-select select2) : peuplement + écoute ---
 					$('.statesAutoComplete').select2({
-						placeholder: '<?php echo dol_escape_js($langs->trans('StateShort')); ?>',
+						placeholder: '<?php echo dol_escape_js($langs->transnoentities('StateShort')); ?>',
 						allowClear: true,
 						width: '100%'
 					});
@@ -1045,7 +1045,7 @@ class ActionsIDreamANewCalendar
 
 					// --- Filtre types d'action (multi-select select2) : peuplement + écoute ---
 					$('.actioncodeAutoComplete').select2({
-						placeholder: '<?php echo dol_escape_js($langs->trans('ActionType')); ?>',
+						placeholder: '<?php echo dol_escape_js($langs->transnoentities('ActionType')); ?>',
 						allowClear: true,
 						width: '100%'
 					});

@@ -69,3 +69,4 @@ MAIN_STORE_FULL_EVENT_IN_GMT=Record events for one day in GMT format (not retroa
 IDreamANewCalendarSetup=Configuring the IDreamANewCalendar module
 IDreamANewCalendarSetupPage=IDreamANewCalendar module configuration page
 AGENDA_ALL_CALENDARS=View all default user calendars
+ListWeek=Week list
