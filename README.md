@@ -1,6 +1,6 @@
 # I DREAM A NEW CALENDAR — Module Dolibarr
 
-Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dolibarr.org) basé sur la bibliothèque [EventCalendar](https://github.com/vkurko/calendar). Il remplace les vues Mois/Semaine/Jour de l'agenda natif par un calendrier interactif unique avec gestion de sources externes ICS et filtres avancés.
+Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dolibarr.org) basé sur la bibliothèque [EventCalendar](https://github.com/vkurko/calendar). Il remplace les vues Mois/Semaine/Jour de l'agenda natif par un calendrier interactif unique avec gestion de sources externes ICS, filtres avancés et édition rapide des événements.
 
 ![Vue semaine](img/screenshots/vue-semaine.png)
 
@@ -17,6 +17,7 @@ Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dol
 - [Fonctionnalités](#fonctionnalités)
   - [Vue calendrier](#vue-calendrier)
   - [Filtres et recherche](#filtres-et-recherche)
+  - [Édition rapide par popup](#édition-rapide-par-popup)
   - [Glisser-déposer et redimensionnement](#glisser-déposer-et-redimensionnement)
   - [Anniversaires](#anniversaires)
   - [Calendriers ICS externes](#calendriers-ics-externes)
@@ -113,7 +114,9 @@ Onglet **Sites externes** de la configuration admin. Permet de définir jusqu'à
 
 Chaque utilisateur peut définir ses propres flux ICS via l'onglet **Calendriers externes** de sa fiche utilisateur.
 
-![Calendriers externes utilisateur](img/screenshots/config-user-ext-calendars.png) Les constantes sont stockées par utilisateur avec le pattern `AGENDA_EXT_{FIELD}_{uid}_{i}`.
+![Calendriers externes utilisateur](img/screenshots/config-user-ext-calendars.png)
+
+Les constantes sont stockées par utilisateur avec le pattern `AGENDA_EXT_{FIELD}_{uid}_{i}`.
 
 | Champ | Description |
 |---|---|
@@ -132,14 +135,16 @@ Chaque utilisateur peut définir ses propres flux ICS via l'onglet **Calendriers
 
 Le module remplace les trois onglets natifs de l'agenda (Mois, Semaine, Jour) par un onglet unique propulsé par la bibliothèque **EventCalendar**. Quatre vues sont disponibles, sélectionnables via la barre d'outils :
 
-| Vue | Identifiant interne | Description |
+| Vue | Bouton | Description |
 |---|---|---|
-| Mois | `dayGridMonth` | Grille mensuelle |
-| Semaine | `timeGridWeek` | Grille hebdomadaire avec créneaux horaires (08h–22h) |
-| Jour | `timeGridDay` | Grille journalière |
-| Liste | `listWeek` | Liste des événements de la semaine |
+| Mois | Vue mois | Grille mensuelle |
+| Semaine | Vue semaine | Grille hebdomadaire avec créneaux horaires (08h–22h) |
+| Jour | Vue jour | Grille journalière |
+| Liste | Liste semaine | Liste des événements de la semaine |
 
 La vue par défaut est contrôlée par la préférence utilisateur `AGENDA_DEFAULT_VIEW`. Le premier jour de la semaine est configurable via `MAIN_START_WEEK` (défaut : 1 = lundi).
+
+Le label **Journée** (all-day) est traduit dans la langue de l'utilisateur.
 
 **Vue semaine**
 
@@ -159,24 +164,47 @@ La vue par défaut est contrôlée par la préférence utilisateur `AGENDA_DEFAU
 
 ### Filtres et recherche
 
-Un panneau de filtres est affiché au-dessus du calendrier. Il permet de filtrer les événements par :
+Un panneau de filtres est affiché au-dessus du calendrier. Tous les selects de filtrage ont une largeur uniforme (200 px).
 
 | Filtre | Type | Condition |
 |---|---|---|
 | Recherche libre | Texte | Recherche dans le sujet, les notes et le lieu |
-| Utilisateur | Autocomplete | Requiert `agenda.allactions.read` |
-| Tiers | Autocomplete | Requiert le module **Sociétés** et `societe.lire` |
-| Département | Multi-sélection | Départements français (France) |
-| Projet | Autocomplete | Requiert le module **Projets** et `projet.lire` |
-| Type d'action | Multi-sélection | Types d'action configurés dans le dictionnaire |
+| Utilisateur | Select2 (défilement infini) | Requiert `agenda.allactions.read` |
+| Tiers | Select2 (défilement infini) | Requiert le module **Sociétés** et `societe.lire` |
+| Département | Multi-sélection Select2 | Départements français (France) |
+| Projet | Select2 (défilement infini) | Requiert le module **Projets** et `projet.lire` |
+| Type d'action | Multi-sélection Select2 | Types d'action configurés dans le dictionnaire |
+
+Les selects Tiers et Projets chargent les résultats page par page (20 par page) sans minimum de caractères requis — la liste s'ouvre immédiatement au clic. Un bouton réinitialiser (gomme) remet tous les filtres à zéro.
+
+### Édition rapide par popup
+
+Un clic sur un événement ouvre une fenêtre de dialogue jQuery UI.
+
+![Popup d'édition](img/screenshots/popup-edition.png)
+
+**Événement éditable** (appartenant à l'utilisateur connecté ou `agenda.allactions.create`) :
+
+| Champ | Description |
+|---|---|
+| Libellé | Sujet de l'événement |
+| Date début / Date fin | Champs `datetime-local` (ou `date` si journée entière) |
+| Journée | Case à cocher — bascule les champs entre date et datetime |
+| Lieu | Adresse ou salle |
+| Pourcentage | Avancement (Non applicable, 0 %, 25 %, 50 %, 75 %, 100 %) |
+| Note | Texte libre (note privée) |
+
+Boutons disponibles : **Enregistrer** (AJAX `updateaction`), **Supprimer** (AJAX `deleteevent`), **Voir la fiche** (ouvre la fiche Dolibarr dans un nouvel onglet), **Clôturer**.
+
+**Événement en lecture seule** (ICS externe, anniversaire, événement auto, autre propriétaire) : affiche un dialogue d'information non modifiable avec un seul bouton **Clôturer**.
 
 ### Glisser-déposer et redimensionnement
 
-Les événements Dolibarr (hors type `AC_OTH_AUTO`) peuvent être :
+Les événements Dolibarr éditables peuvent être :
 - **Déplacés** par glisser-déposer → mise à jour des dates de début et de fin.
 - **Redimensionnés** par drag sur le bord inférieur → mise à jour de la date de fin.
 
-Ces modifications sont répercutées immédiatement via l'API AJAX (`action=putevent`). L'édition n'est possible que si l'utilisateur est propriétaire de l'événement ou dispose de la permission `agenda.allactions.create`.
+Ces modifications sont répercutées immédiatement via l'API AJAX (`action=putevent`). Les événements en lecture seule (ICS, anniversaires, type `AC_OTH_AUTO`) ne peuvent pas être déplacés ni redimensionnés — toute tentative est annulée automatiquement.
 
 ### Anniversaires
 
@@ -184,10 +212,12 @@ Les anniversaires des contacts (champ `birthday` de `llx_socpeople`) sont affich
 
 ### Calendriers ICS externes
 
-Les flux ICS (globaux et personnels) sont chargés via l'API AJAX et analysés avec la bibliothèque **ics-parser**. Les données analysées sont mises en cache sur disque dans `DOL_DATA_ROOT/agenda/temp/` :
+Les flux ICS (globaux et personnels) sont chargés via l'API AJAX et analysés avec la bibliothèque **ics-parser**. Les données sont mises en cache sur disque sous forme de fichier `.ics` brut dans `DOL_DATA_ROOT/agenda/temp/` :
 
-- Flux globaux : `ical-e{entity}-{calendarId}.cache` (durée configurable par flux, défaut 30 min).
-- Flux personnels : `ical-e{entity}-u{uid}-{calendarId}.cache` (défaut 60 min).
+- Flux globaux : `ical-e{entity}-{calendarId}.ics` (durée configurable par flux, défaut 30 min).
+- Flux personnels : `ical-e{entity}-u{uid}-{calendarId}.ics` (défaut 60 min).
+
+Tous les flux (Dolibarr, anniversaires, ICS) sont récupérés en parallèle via `Promise.all` et fournis au widget en un seul appel `successCallback`, ce qui évite tout scintillement à l'actualisation.
 
 La liste des calendriers disponibles est affichée dans le panneau latéral gauche. Chaque calendrier peut être affiché ou masqué indépendamment via des cases à cocher.
 
@@ -231,7 +261,7 @@ idreamanewcalendar/
 │   ├── it_IT/idreamanewcalendar.lang
 │   └── uk_UA/idreamanewcalendar.lang
 ├── lib/
-│   ├── event-calendar/         — Bibliothèque JS EventCalendar
+│   ├── event-calendar/         — Bibliothèque JS EventCalendar v5
 │   ├── ics-parser/             — Parser ICS (ICal\ICal)
 │   └── idreamanewcalendar.lib.php  — Préparation des onglets admin
 ├── sql/
@@ -250,7 +280,6 @@ idreamanewcalendar/
 | Propriété | Valeur |
 |---|---|
 | ID de module (`numero`) | `14011966` |
-| Version | `0.2.0` |
 | Famille | `agenda` |
 | PHP minimum | 7.4 |
 | Dolibarr minimum | 20.0 |
@@ -280,22 +309,20 @@ idreamanewcalendar/
 | `beforeAgenda()` | `agenda` | **Hook principal.** Remplace intégralement la page d'agenda natif en injectant le calendrier EventCalendar, la barre de filtres et les sources d'événements. Appelle `exit` après rendu. |
 | `printLeftBlock()` | `leftblock` | Injecte le panneau latéral `#lnb-calendars` avec la liste des calendriers (coché/décoché). Actif uniquement sur `index.php`. |
 | `doActions()` | `actioncard`, `agenda` | Placeholder pour futures actions POST — retourne 0. |
-| `addMoreMassActions()` | — | Placeholder — retourne 0. |
-| `getNomUrl()` | — | Placeholder — retourne 0. |
 | `getPrintActionsFilter()` | *privée* | Génère le HTML du formulaire de filtres (commenté dans le hook). |
 | `formSelectStatusAction()` | *privée* | Widget `<select>` de filtrage par statut de complétion. |
 
 Le hook `beforeAgenda` :
-1. Charge les en-têtes HTML via `llxHeader()` avec EventCalendar JS/CSS.
+1. Charge les en-têtes HTML via `llxHeader()` avec EventCalendar JS/CSS et Select2.
 2. Lit les paramètres de filtre depuis `$parameters` (utilisateur, tiers, projet, type, etc.).
 3. Calcule les flux ICS globaux et personnels activés.
-4. Génère la barre de filtres avec autocomplete (utilisateurs, tiers, départements, projets, types).
-5. Monte l'instance `EventCalendar` en JavaScript avec deux sources d'événements :
-   - `resourceId=1` : événements Dolibarr (via `ajax_events.php?action=getevents`)
-   - `resourceId=2` : anniversaires (via `ajax_events.php?action=getevents`)
-   - Sources supplémentaires pour chaque flux ICS externe activé.
-6. Configure le drag-and-drop et le redimensionnement (appels POST vers `putevent`).
-7. Configure l'auto-refresh via `setInterval`.
+4. Génère la barre de filtres avec selects Select2 à défilement infini (utilisateurs, tiers, projets) et multi-selects (départements, types d'action).
+5. Monte l'instance `EventCalendar` en JavaScript avec une source d'événements unifiée :
+   - Tous les appels AJAX (Dolibarr, anniversaires, ICS) sont lancés en parallèle via `Promise.all`.
+   - `successCallback` n'est appelé qu'une seule fois avec le résultat fusionné, sans scintillement.
+6. Configure le drag-and-drop et le redimensionnement avec protection des événements en lecture seule.
+7. Configure le popup d'édition jQuery UI via `ec.setOption('eventClick', ...)`.
+8. Configure l'auto-refresh via `setInterval`.
 
 ### Triggers
 
@@ -339,14 +366,16 @@ CREATE TABLE llx_actioncomm_deleted(
 
 | `action` | Méthode | Description |
 |---|---|---|
-| `getevents` | GET | Retourne les événements pour une plage de dates. Paramètre clé : `resourceId`, `start`, `end`, `offset`, et filtres optionnels. |
+| `getevents` | GET | Retourne les événements pour une plage de dates. Paramètre clé : `resourceId`, `start`, `end`, et filtres optionnels. |
 | `getdeletedevents` | GET | Retourne les IDs des événements supprimés depuis moins de 3 h. |
-| `putevent` | POST | Met à jour les dates et le lieu d'un événement existant. |
+| `getaction` | GET | Retourne les détails complets d'un événement Dolibarr pour le popup d'édition (paramètre `id`). |
+| `putevent` | POST | Met à jour les dates et le lieu d'un événement (drag-and-drop / resize). |
+| `updateaction` | POST | Met à jour les champs d'un événement depuis le popup (libellé, dates, lieu, note, pourcentage). |
 | `postevent` | POST | Crée un nouvel événement de type `AC_OTH`. |
 | `deleteevent` | POST | Supprime un événement. |
 | `getcalendars` | GET | Retourne la liste de tous les calendriers disponibles (Dolibarr, anniversaires, ICS). |
-| `getcustomers` | GET | Autocomplete tiers (paramètre `q`). |
-| `getprojects` | GET | Autocomplete projets (paramètre `q`). |
+| `getcustomers` | GET | Liste paginée des tiers (paramètres `q`, `page`). 20 résultats par page. |
+| `getprojects` | GET | Liste paginée des projets (paramètres `q`, `page`). 20 résultats par page. |
 | `getdolusers` | GET | Autocomplete utilisateurs Dolibarr (paramètre `q`). |
 | `gettypeactions` | GET | Retourne tous les types d'action actifs du dictionnaire. |
 | `getstates` | GET | Retourne les départements français. |
@@ -356,7 +385,7 @@ CREATE TABLE llx_actioncomm_deleted(
 
 #### Format de retour `getevents`
 
-Chaque événement retourné est un objet JSON compatible EventCalendar :
+Chaque événement retourné est un objet JSON compatible EventCalendar v5 :
 
 ```json
 {
@@ -366,7 +395,8 @@ Chaque événement retourné est un objet JSON compatible EventCalendar :
   "body": "Note interne",
   "start": "2026-06-15T09:00:00+02:00",
   "end": "2026-06-15T10:00:00+02:00",
-  "editable": true,
+  "startEditable": true,
+  "durationEditable": true,
   "allDay": false,
   "textColor": "#ffffff",
   "backgroundColor": "#2e0ebe",
@@ -375,6 +405,37 @@ Chaque événement retourné est un objet JSON compatible EventCalendar :
     "attendees": ["<span>...</span>"],
     "borderColor": "#e87e04"
   }
+}
+```
+
+Les événements en lecture seule (ICS, anniversaires, `AC_OTH_AUTO`) ont `startEditable: false` et `durationEditable: false`.
+
+#### Format de retour `getaction`
+
+```json
+{
+  "id": 42,
+  "label": "Réunion client",
+  "note": "Ordre du jour...",
+  "percent": 0,
+  "location": "Paris",
+  "fulldayevent": false,
+  "start": "2026-06-15T09:00",
+  "end": "2026-06-15T10:00",
+  "startEditable": true
+}
+```
+
+#### Format de retour `getcustomers` / `getprojects`
+
+Format Select2 avec pagination :
+
+```json
+{
+  "results": [
+    { "id": 1, "text": "Société Exemple" }
+  ],
+  "pagination": { "more": true }
 }
 ```
 
@@ -425,8 +486,10 @@ Pour ajouter une langue, créez le répertoire `langs/{locale}/` et copiez `en_U
 
 | Bibliothèque | Chemin | Usage |
 |---|---|---|
-| [EventCalendar](https://github.com/vkurko/calendar) | `lib/event-calendar/` | Widget calendrier principal (JS + CSS) |
+| [EventCalendar v5](https://github.com/vkurko/calendar) | `lib/event-calendar/` | Widget calendrier principal (JS + CSS) |
 | [ics-parser](https://github.com/u01jmg3/ics-parser) | `lib/ics-parser/` | Parsing des flux ICS externes (PHP) |
+| [Select2](https://select2.org) | fourni par Dolibarr | Selects à défilement infini pour les filtres |
+| jQuery UI | fourni par Dolibarr | Dialog pour le popup d'édition |
 
 ---
 

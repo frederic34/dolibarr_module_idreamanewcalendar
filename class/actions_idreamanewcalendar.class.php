@@ -1222,7 +1222,7 @@ class ActionsIDreamANewCalendar
 							title: titleText || '<?php echo dol_escape_js($langs->transnoentities('Event')); ?>',
 							width: 460,
 							modal: true,
-							buttons: { '<?php echo dol_escape_js($langs->trans('Close')); ?>': function() { $(this).dialog('close'); } }
+							buttons: { '<?php echo dol_escape_js($langs->transnoentities('Close')); ?>': function() { $(this).dialog('close'); } }
 						});
 						return;
 					}
