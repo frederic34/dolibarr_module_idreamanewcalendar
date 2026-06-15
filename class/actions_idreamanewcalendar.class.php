@@ -689,7 +689,7 @@ class ActionsIDreamANewCalendar
 					timeGridWeek: '<?php echo dol_escape_js($langs->transnoentities('ViewWeek')); ?>',
 					timeGridDay: '<?php echo dol_escape_js($langs->transnoentities('ViewDay')); ?>',
 					listWeek: '<?php echo dol_escape_js($langs->transnoentities('ListWeek')); ?>',
-					close: '<?php echo dol_escape_js($langs->transnoentities('Close')); ?>',
+					close: '<?php echo dol_escape_js($langs->transnoentities('CloseWindowShort')); ?>',
 					prev: '<?php echo dol_escape_js($langs->transnoentities("Previous")); ?>',
 					next: '<?php echo dol_escape_js($langs->transnoentities("Next")); ?>',
 				}
@@ -1228,7 +1228,7 @@ class ActionsIDreamANewCalendar
 							title: titleText || '<?php echo dol_escape_js($langs->transnoentities('Event')); ?>',
 							width: 460,
 							modal: true,
-							buttons: { '<?php echo dol_escape_js($langs->transnoentities('Close')); ?>': function() { $(this).dialog('close'); } }
+							buttons: { '<?php echo dol_escape_js($langs->transnoentities('CloseWindowShort')); ?>': function() { $(this).dialog('close'); } }
 						});
 						return;
 					}
@@ -1292,7 +1292,7 @@ class ActionsIDreamANewCalendar
 							buttons['<?php echo dol_escape_js($langs->transnoentities('IDreamANewCalendarOpenCard')); ?>'] = function() {
 								window.open(cardBase + '?id=' + data.id, '_blank');
 							};
-							buttons['<?php echo dol_escape_js($langs->transnoentities('Close')); ?>'] = function() {
+							buttons['<?php echo dol_escape_js($langs->transnoentities('CloseWindowShort')); ?>'] = function() {
 								$(this).dialog('close');
 							};
 
@@ -1364,7 +1364,7 @@ class ActionsIDreamANewCalendar
 							}
 						});
 					};
-					buttons['<?php echo dol_escape_js($langs->transnoentities('Close')); ?>'] = function() {
+					buttons['<?php echo dol_escape_js($langs->transnoentities('CloseWindowShort')); ?>'] = function() {
 						$(this).dialog('close');
 					};
 
