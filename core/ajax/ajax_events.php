@@ -643,7 +643,9 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 		}
 		$sql .= ' WHERE  a.entity IN (' . getEntity('agenda', 1) . ')';
 		if (!empty($actioncode)) {
-			$escapedCodes = array_map(function ($code) use ($db) { return "'" . $db->escape($code) . "'"; }, $actioncode);
+			$escapedCodes = array_map(function ($code) use ($db) {
+				return "'" . $db->escape($code) . "'";
+			}, $actioncode);
 			$sql .= " AND ca.code IN (" . implode(',', $escapedCodes) . ")";
 		}
 		if (getDolGlobalInt('EVENT_CALENDAR_DONT_SHOW_AUTO_EVENTS') && strpos(implode(',', $actioncode), 'AC_OTH_AUTO') === false) {
