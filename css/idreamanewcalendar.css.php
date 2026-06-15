@@ -282,14 +282,14 @@ header('Cache-Control: max-age=10800, public, must-revalidate');
   display: inline-block;
   line-height: 30px;
   vertical-align: middle;
-  min-width: 180px;
+  width: 220px;
 }
 .search-actioncode {
   padding: 0 8px;
   display: inline-block;
   line-height: 30px;
   vertical-align: middle;
-  min-width: 180px;
+  width: 220px;
 }
 .search-projects {
   padding: 0 8px;
