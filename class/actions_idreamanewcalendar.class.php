@@ -772,8 +772,11 @@ class ActionsIDreamANewCalendar
 								};
 								break;
 							default:
+								const titleHtml = info.event.titleHTML
+									?? (info.event.title && typeof info.event.title === 'object' ? info.event.title.html : null);
+								const titleText = typeof info.event.title === 'string' ? info.event.title : null;
 								content = {
-									domNodes: [createElement('div', 'ec-event-title', info.event.titleHTML, info.event.title)]
+									domNodes: [createElement('div', 'ec-event-title', titleHtml, titleText)]
 								};
 						}
 						return content;
