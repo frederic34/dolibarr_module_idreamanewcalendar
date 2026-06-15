@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,20 +34,3 @@ jobs:
 
       - name: Run VarDump Check
         run: var-dump-check --extensions php --tracy --exclude vendor/ .
-
-      - name: Bump version and push tag
-        uses: frederic34/github-dolibarr-action@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: frederic34
-          RELEASE_BRANCH: main
-          MODULE: idreamanewcalendar
-          CLASSNAME: IDreamANewCalendar
-          RELEASE_BRANCHES: main
-          DEFAULT_BUMP: none
-          INITIAL_VERSION: v0.0.0
-          VERBOSE: true
-
-      - uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Bump version #none

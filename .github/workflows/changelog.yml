@@ -6,8 +6,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
+    # Skip commits already made by this workflow to avoid infinite loop
+    if: "!contains(github.event.head_commit.message, 'Bump version')"
 
     steps:
       - uses: actions/checkout@v4
@@ -26,9 +28,6 @@ jobs:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Print PHP version
-        run: echo ${{ steps.setup-php.outputs.php-version }}
-
       - name: Run autotranslator
         run: |
           php ./.tx/autotranslator.php fr_FR it_IT ${{ secrets.GOOGLE_API_TRANSLATE }}
@@ -36,11 +35,6 @@ jobs:
           php ./.tx/autotranslator.php fr_FR uk_UA ${{ secrets.GOOGLE_API_TRANSLATE }}
           php ./.tx/autotranslator.php fr_FR es_ES ${{ secrets.GOOGLE_API_TRANSLATE }}
           php ./.tx/autotranslator.php fr_FR de_DE ${{ secrets.GOOGLE_API_TRANSLATE }}
-
-      - name: Run changelog
-        run: npx lerna-changelog --from=v0.0.0 > ChangeLog.md
-        env:
-          GITHUB_AUTH: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Bump version and push tag
         uses: frederic34/github-dolibarr-action@main
@@ -57,11 +51,10 @@ jobs:
 
       - name: Zip Folder
         run: |
-          ls -al
-          mkdir build/htdocs
+          mkdir -p build/htdocs
           rsync -arv --exclude='.git/' --exclude='.github/' --exclude='.gitignore' --exclude='.tx/' --exclude='build/' --exclude='codesniffer/' . ./build/htdocs/idreamanewcalendar
 
-      - name: Switch to Release Folder
+      - name: Create release zip
         run: |
           cd build
           zip -r module_idreamanewcalendar-${{ env.module_version }}.zip htdocs
