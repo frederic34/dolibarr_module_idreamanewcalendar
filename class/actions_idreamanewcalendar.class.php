@@ -544,15 +544,17 @@ class ActionsIDreamANewCalendar
 			// 	$mode = (($defaultview != 'show_list') ? $defaultview : 'show_month');
 			// }
 			// $defaultview = 'month';
-			// dayGridMonth timeGridWeek timeGridDay listWeek resourceTimeGridWeek resourceTimelineWeek
+			// dayGridMonth timeGridWeek timeGridDay listDay listWeek listMonth listYear resourceTimeGridWeek resourceTimelineWeek
 			if ($mode == 'show_day') {
 				$ecview = 'timeGridDay';
 			} elseif ($mode == 'show_month') {
 				$ecview = 'dayGridMonth';
 			} elseif ($mode == 'show_week') {
 				$ecview = 'timeGridWeek';
+			} elseif ($mode == 'show_list') {
+				$ecview = 'listMonth';
 			} else {
-				$ecview = 'listWeek';
+				$ecview = 'listMonth';
 			}
 			$firstday = getDolGlobalInt('MAIN_START_WEEK', 1);
 
@@ -688,7 +690,10 @@ class ActionsIDreamANewCalendar
 					dayGridMonth: '<?php echo dol_escape_js($langs->transnoentities('ViewCal')); ?>',
 					timeGridWeek: '<?php echo dol_escape_js($langs->transnoentities('ViewWeek')); ?>',
 					timeGridDay: '<?php echo dol_escape_js($langs->transnoentities('ViewDay')); ?>',
-					listWeek: '<?php echo dol_escape_js($langs->transnoentities('ListWeek')); ?>',
+					listDay: '<?php echo dol_escape_js($langs->transnoentities('Day')); ?>',
+					listWeek: '<?php echo dol_escape_js($langs->transnoentities('Week')); ?>',
+					listMonth: '<?php echo dol_escape_js($langs->transnoentities('Month')); ?>',
+					listYear: '<?php echo dol_escape_js($langs->transnoentities('Year')); ?>',
 					close: '<?php echo dol_escape_js($langs->transnoentities('CloseWindowShort')); ?>',
 					prev: '<?php echo dol_escape_js($langs->transnoentities("Previous")); ?>',
 					next: '<?php echo dol_escape_js($langs->transnoentities("Next")); ?>',
@@ -744,7 +749,7 @@ class ActionsIDreamANewCalendar
 					headerToolbar: {
 						start: 'prev,next today',
 						center: 'title',
-						end: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+						end: 'dayGridMonth,timeGridWeek,timeGridDay listDay,listWeek,listMonth,listYear'
 					},
 					buttonText: {
 						...buttonText
@@ -878,6 +883,10 @@ class ActionsIDreamANewCalendar
 						}
 					],
 					views: {
+						listDay:   { pointer: true },
+						listWeek:  { pointer: true },
+						listMonth: { pointer: true },
+						listYear:  { pointer: true },
 						timeGridWeek: {
 							pointer: true,
 							slotMinTime: '08:00',
