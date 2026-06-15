@@ -1219,7 +1219,7 @@ class ActionsIDreamANewCalendar
 						);
 						$('#ec-event-form > div:not(#ec-event-readonly-info)').hide();
 						$('#ec-event-popup').dialog({
-							title: titleText || '<?php echo dol_escape_js(\$langs->transnoentities('Event')); ?>',
+							title: titleText || '<?php echo dol_escape_js($langs->transnoentities('Event')); ?>',
 							width: 460,
 							modal: true,
 							buttons: { '<?php echo dol_escape_js($langs->trans('Close')); ?>': function() { $(this).dialog('close'); } }
@@ -1292,11 +1292,11 @@ class ActionsIDreamANewCalendar
 
 							if ($('#ec-event-popup').hasClass('ui-dialog-content')) {
 								$('#ec-event-popup').dialog('option', 'buttons', buttons);
-								$('#ec-event-popup').dialog('option', 'title', data.label || '<?php echo dol_escape_js(\$langs->transnoentities('Event')); ?>');
+								$('#ec-event-popup').dialog('option', 'title', data.label || '<?php echo dol_escape_js($langs->transnoentities('Event')); ?>');
 								$('#ec-event-popup').dialog('open');
 							} else {
 								$('#ec-event-popup').dialog({
-									title: data.label || '<?php echo dol_escape_js(\$langs->transnoentities('Event')); ?>',
+									title: data.label || '<?php echo dol_escape_js($langs->transnoentities('Event')); ?>',
 									width: 500,
 									modal: true,
 									buttons: buttons
