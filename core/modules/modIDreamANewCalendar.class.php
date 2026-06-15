@@ -164,19 +164,19 @@ class modIDreamANewCalendar extends DolibarrModules
 		// Array to add new pages in new tabs
 		$this->tabs = [];
 		$this->tabs[] = [
-			'data' => 'agenda:-cardmonth:NU:$conf->idreamanewcalendar->enabled'
+			'data' => 'agenda:-cardmonth:NU:isModEnabled("idreamanewcalendar")',
 		];
 		$this->tabs[] = [
-			'data' => 'agenda:-cardweek:NU:$conf->idreamanewcalendar->enabled'
+			'data' => 'agenda:-cardweek:NU:isModEnabled("idreamanewcalendar")'
 		];
 		$this->tabs[] = [
-			'data' => 'agenda:-cardday:NU:$conf->idreamanewcalendar->enabled'
+			'data' => 'agenda:-cardday:NU:isModEnabled("idreamanewcalendar")'
 		];
 		$this->tabs[] = [
-			'data' => 'agenda:+idreamanewcalendar:IDreamANewCalendarViewAgenda:idreamanewcalendar@idreamanewcalendar:$user->rights->agenda->myactions->read:/comm/action/index.php',
+			'data' => 'agenda:+idreamanewcalendar:IDreamANewCalendarViewAgenda:idreamanewcalendar@idreamanewcalendar:$user->hasRight("agenda","myactions","read"):/comm/action/index.php',
 		];
 		$this->tabs[] = [
-			'data' => 'user:-extsites:NU:$conf->idreamanewcalendar->enabled'
+			'data' => 'user:-extsites:NU:isModEnabled("idreamanewcalendar")'
 		];
 		$this->tabs[] = [
 			'data' => 'user:+extsites:IDreamANewCalendarExtSites:idreamanewcalendar@idreamanewcalendar:$user->rights->agenda->myactions->read:/idreamanewcalendar/tabs/agenda_extsites.php?id=__ID__',
@@ -287,15 +287,6 @@ class modIDreamANewCalendar extends DolibarrModules
 			// (the _load_table run sql with run_sql with the error allowed parameter set to 'default')
 			return -1;
 		}
-
-		// Create extrafields during init
-		//include_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
-		//$extrafields = new ExtraFields($this->db);
-		//$result1=$extrafields->addExtraField('myattr1', "New Attr 1 label", 'boolean', 1,  3, 'thirdparty',   0, 0, '', '', 1, '', 0, 0, '', '', 'idreamanewcalendar@idreamanewcalendar', '$conf->idreamanewcalendar->enabled');
-		//$result2=$extrafields->addExtraField('myattr2', "New Attr 2 label", 'varchar', 1, 10, 'project',      0, 0, '', '', 1, '', 0, 0, '', '', 'idreamanewcalendar@idreamanewcalendar', '$conf->idreamanewcalendar->enabled');
-		//$result3=$extrafields->addExtraField('myattr3', "New Attr 3 label", 'varchar', 1, 10, 'bank_account', 0, 0, '', '', 1, '', 0, 0, '', '', 'idreamanewcalendar@idreamanewcalendar', '$conf->idreamanewcalendar->enabled');
-		//$result4=$extrafields->addExtraField('myattr4', "New Attr 4 label", 'select',  1,  3, 'thirdparty',   0, 1, '', array('options'=>array('code1'=>'Val1','code2'=>'Val2','code3'=>'Val3')), 1,'', 0, 0, '', '', 'idreamanewcalendar@idreamanewcalendar', '$conf->idreamanewcalendar->enabled');
-		//$result5=$extrafields->addExtraField('myattr5', "New Attr 5 label", 'text',    1, 10, 'user',         0, 0, '', '', 1, '', 0, 0, '', '', 'idreamanewcalendar@idreamanewcalendar', '$conf->idreamanewcalendar->enabled');
 
 		$sql = [];
 		return $this->_init($sql, $options);
