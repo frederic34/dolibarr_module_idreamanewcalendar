@@ -940,6 +940,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 		// require_once DOL_DOCUMENT_ROOT . '/comm/action/class/ical.class.php';
 		// caching ics files
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/geturl.lib.php';
 		dol_include_once('/idreamanewcalendar/lib/ics-parser/src/ICal/ICal.php');
 		dol_include_once('/idreamanewcalendar/lib/ics-parser/src/ICal/Event.php');
 		// cette valeur peut se trouver dans le ical source, mais pas toujours
@@ -960,42 +961,41 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 				$fileid = $extcal['calendarId'] . '.cache';
 				$cachetime = ($extcal['cachetime'] > 0 ? $extcal['cachetime'] : 1800);   // 1800 : 30mn
 			}
-			$filename = '/ical-e' . $conf->entity . '-' . $fileid;
+			$filename = '/ical-e' . $conf->entity . '-' . $fileid . '.ics';
+			$cachefile = $cachedir . $filename;
 			$refresh = dol_cache_refresh($cachedir, $filename, (int) $cachetime);
-			// on cache le fichier si besoin
+			// on cache le contenu ICS brut (string) pour éviter les problèmes de sérialisation JSON
 			if ($refresh) {
 				try {
-					$ical = new ICal(false, [
-						// Default value
-						'defaultSpan' => 2,
-						'defaultTimeZone' => 'Europe/Paris',
-						// Default value
-						'defaultWeekStart' => 'MO',
-						// Default value
-						'disableCharacterReplacement' => false,
-						// Default value
-						'filterDaysAfter' => null,
-						// Default value
-						'filterDaysBefore' => null,
-						// Default value
-						'skipRecurrence' => false,
-					]);
-					// $ical->initFile(DOL_DATA_ROOT . '/agenda/temp/ICal.ics');
-					$ical->initUrl($url);
+					$icsContent = getURLContent($url, 'GET', '', 1, [], ['http', 'https'], 0);
+					if (empty($icsContent['content'])) {
+						continue;
+					}
+					if (!dol_is_dir($cachedir)) {
+						dol_mkdir($cachedir);
+					}
+					file_put_contents($cachefile, $icsContent['content'], LOCK_EX);
+					dol_syslog('Ical : loaded ' . $namecal . ' cachetime : ' . $cachetime, LOG_DEBUG);
 				} catch (Exception $e) {
-					//die($e);
-					return [];
+					continue;
 				}
-				dol_syslog('Ical : loaded ' . $namecal . ' cachetime : ' . $cachetime, LOG_DEBUG);
-				// on cache le fichier parsé
-				dol_filecache($cachedir, $filename, $ical);
 			} else {
-				dol_syslog('reading Ical from cache : ' . $namecal . ' cachetime : ' . $cachetime, LOG_DEBUG);
-				// on récupère le fichier déjà parsé
-				$ical = dol_readcachefile($cachedir, $filename);
+				dol_syslog('Ical : reading from cache : ' . $namecal . ' cachetime : ' . $cachetime, LOG_DEBUG);
 			}
-			// pour faire des dumps dans la librairie ical, il faut désactiver le cache...
-			// print '<pre>' . print_r($ical, true)  . '</pre>';
+			try {
+				$ical = new ICal(false, [
+					'defaultSpan' => 2,
+					'defaultTimeZone' => 'Europe/Paris',
+					'defaultWeekStart' => 'MO',
+					'disableCharacterReplacement' => false,
+					'filterDaysAfter' => null,
+					'filterDaysBefore' => null,
+					'skipRecurrence' => false,
+				]);
+				$ical->initString(file_get_contents($cachefile));
+			} catch (Exception $e) {
+				continue;
+			}
 			$icalevents = $ical->events();
 
 			// Loop on each entry into cal file to know if entry is qualified and add an ActionComm into $eventarray
