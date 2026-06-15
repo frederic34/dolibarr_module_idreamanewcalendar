@@ -258,10 +258,11 @@ switch ($action) {
 		break;
 	case 'getprojects':
 		require_once DOL_DOCUMENT_ROOT . '/projet/class/project.class.php';
-		$response = [];
-		$data = [];
 		$filterkey = GETPOST('q', 'alphanohtml');
-		$limit = 100;
+		$page = max(1, GETPOSTINT('page'));
+		$pageSize = 20;
+		$offset = ($page - 1) * $pageSize;
+		$results = [];
 		// on restreint à une société
 		$socid = GETPOST("search_socid", "int") ? GETPOST("search_socid", "int") : GETPOST("socid", "int");
 		// l'utilisateur est externe , il ne peux voir que ce qui concerne cette société
@@ -298,18 +299,17 @@ switch ($action) {
 				$sql .= natural_search(['p.title', 'p.ref'], $filterkey);
 			}
 			$sql .= " ORDER BY p.ref ASC";
-			$sql .= $db->plimit($limit, 0);
-			// Build output string
+			$sql .= $db->plimit($pageSize + 1, $offset);
 			$resql = $db->query($sql);
+			$count = 0;
 			while ($resql && $obj = $db->fetch_object($resql)) {
-				$label = $obj->ref . ' ' . $obj->title;
-				$response[] = [
-					'value' => $obj->rowid,
-					'text' => $label,
-				];
+				if ($count < $pageSize) {
+					$results[] = ['id' => $obj->rowid, 'text' => $obj->ref . ' ' . $obj->title];
+				}
+				$count++;
 			}
 		}
-		print json_encode($response);
+		print json_encode(['results' => $results, 'pagination' => ['more' => $count > $pageSize]]);
 		break;
 	case 'getdolusers':
 		$filterkey = GETPOST('q', 'alphanohtml');

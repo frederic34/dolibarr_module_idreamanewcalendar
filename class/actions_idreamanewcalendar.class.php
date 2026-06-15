@@ -655,8 +655,7 @@ class ActionsIDreamANewCalendar
 			}
 			if (isModEnabled('projet') && $user->hasRight('projet', 'lire')) {
 				print '<span id="search-projects" class="search-projects">';
-				print '    <input class="form-control projectsAutoComplete" type="text" placeholder="' . $langs->trans("Project") . '" autocomplete="off">';
-				print '    <input id="project_id" name="project_id" type="hidden">';
+				print '    <select id="projectsAutoComplete" class="projectsAutoComplete" style="width:100%"></select>';
 				print '</span>';
 			}
 			// select types events + bouton réinitialiser
@@ -970,8 +969,7 @@ class ActionsIDreamANewCalendar
 						$('.searchAll').val('');
 						$('.usersAutoComplete').val(null).trigger('change');
 						$('.customersAutoComplete').val(null).trigger('change');
-						$('.projectsAutoComplete').val('');
-						$('#project_id').val(0);
+						$('.projectsAutoComplete').val(null).trigger('change');
 						$('.statesAutoComplete').val(null).trigger('change');
 						$('.actioncodeAutoComplete').val(null).trigger('change');
 						ec.refetchEvents();
@@ -1000,24 +998,27 @@ class ActionsIDreamANewCalendar
 						ec.refetchEvents();
 					});
 
-					// --- Filtre projet ---
-					$('.projectsAutoComplete').autocomplete({
-						minLength: 2,
-						source: function(request, response) {
-							$.getJSON(ajaxUrl, { action: 'getprojects', q: request.term, token: token }, function(data) {
-								response($.map(data, function(item) {
-									return { label: item.text, value: item.text, id: item.value };
-								}));
-							});
-						},
-						select: function(event, ui) {
-							searchProjectId = ui.item.id;
-							$('#project_id').val(searchProjectId);
-							ec.refetchEvents();
-						},
-						change: function(event, ui) {
-							if (!ui.item) { searchProjectId = 0; $('#project_id').val(0); ec.refetchEvents(); }
+					// --- Filtre projet (Select2 AJAX infinite scroll) ---
+					$('.projectsAutoComplete').select2({
+						placeholder: '<?php echo dol_escape_js($langs->transnoentities('Project')); ?>',
+						allowClear: true,
+						width: '100%',
+						minimumInputLength: 0,
+						ajax: {
+							url: ajaxUrl,
+							dataType: 'json',
+							delay: 250,
+							data: function(params) {
+								return { action: 'getprojects', q: params.term || '', page: params.page || 1, token: token };
+							},
+							processResults: function(data) {
+								return { results: data.results, pagination: { more: data.pagination.more } };
+							}
 						}
+					});
+					$('.projectsAutoComplete').on('change', function() {
+						searchProjectId = $(this).val() || 0;
+						ec.refetchEvents();
 					});
 
 					// --- Filtre départements (multi-select select2) : peuplement + écoute ---
