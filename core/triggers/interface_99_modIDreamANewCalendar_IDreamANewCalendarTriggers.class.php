@@ -97,7 +97,7 @@ class InterfaceIDreamANewCalendarTriggers extends DolibarrTriggers
 	 */
 	public function actionDelete($action, ActionComm $object, User $user, Translate $langs, Conf $conf)
 	{
-		if ($object->oldcopy->id > 0) {
+		if (!empty($object->oldcopy) && $object->oldcopy->id > 0) {
 			$now = dol_now();
 			// store id of deleted action to be able to find them later
 			$sql = 'INSERT INTO ' . MAIN_DB_PREFIX . 'actioncomm_deleted (fk_actioncomm) VALUES (' . $object->oldcopy->id . ')';
