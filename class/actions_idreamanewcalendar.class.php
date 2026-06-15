@@ -749,6 +749,7 @@ class ActionsIDreamANewCalendar
 					buttonText: {
 						...buttonText
 					},
+					allDayContent: '<?php echo dol_escape_js($langs->transnoentities('IDreamANewCalendarAllDay')); ?>',
 					resources: [{
 							id: 1,
 							title: 'Dolibarr'
