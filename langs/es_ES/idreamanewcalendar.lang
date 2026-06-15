@@ -48,3 +48,4 @@ MAIN_STORE_FULL_EVENT_IN_GMT=Registrar los eventos de un día en formato GMT (no
 AGENDA_ALL_CALENDARS=Ver todos los calendarios de usuario predeterminados
 IDREAMANEWCALENDAR_REFRESH_INTERVAL=Intervalo de actualización automática (segundos, 0 = desactivado)
 IDREAMANEWCALENDAR_REFRESH_INTERVALTooltip=Retraso en segundos entre dos actualizaciones automáticas del calendario. Establezca en 0 para desactivar. Valor predeterminado: 300 (5 minutos).
+ListWeek=Lista semanal
