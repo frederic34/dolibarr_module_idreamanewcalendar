@@ -1147,6 +1147,188 @@ class ActionsIDreamANewCalendar
 					});
 				}
 			</script>
+
+			<!-- Modal popup édition événement -->
+			<div id="ec-event-popup" style="display:none">
+				<form id="ec-event-form" style="display:flex;flex-direction:column;gap:.6em">
+					<input type="hidden" id="ec-event-id">
+					<div>
+						<label for="ec-event-label"><?php echo $langs->trans('Label'); ?></label>
+						<input type="text" id="ec-event-label" class="form-control" style="width:100%">
+					</div>
+					<div style="display:flex;gap:.5em">
+						<div style="flex:1">
+							<label for="ec-event-start"><?php echo $langs->trans('DateStart'); ?></label>
+							<input type="datetime-local" id="ec-event-start" class="form-control" style="width:100%">
+						</div>
+						<div style="flex:1">
+							<label for="ec-event-end"><?php echo $langs->trans('DateEnd'); ?></label>
+							<input type="datetime-local" id="ec-event-end" class="form-control" style="width:100%">
+						</div>
+					</div>
+					<div>
+						<label><input type="checkbox" id="ec-event-allday"> <?php echo $langs->trans('IDreamANewCalendarAllDay'); ?></label>
+					</div>
+					<div>
+						<label for="ec-event-location"><?php echo $langs->trans('Location'); ?></label>
+						<input type="text" id="ec-event-location" class="form-control" style="width:100%">
+					</div>
+					<div>
+						<label for="ec-event-percent"><?php echo $langs->trans('Percentage'); ?></label>
+						<select id="ec-event-percent" class="form-control">
+							<option value="-1"><?php echo $langs->trans('StatusNotApplicable'); ?></option>
+							<option value="0">0%</option>
+							<option value="25">25%</option>
+							<option value="50">50%</option>
+							<option value="75">75%</option>
+							<option value="100">100%</option>
+						</select>
+					</div>
+					<div>
+						<label for="ec-event-note"><?php echo $langs->trans('Note'); ?></label>
+						<textarea id="ec-event-note" class="form-control" rows="3" style="width:100%"></textarea>
+					</div>
+					<div id="ec-event-readonly-info" style="display:none;color:#666;font-style:italic"></div>
+				</form>
+			</div>
+
+			<script>
+			(function() {
+				var ajaxUrl = '<?php echo dol_buildpath('/idreamanewcalendar/core/ajax/ajax_events.php', 1); ?>';
+				var token   = '<?php echo newToken(); ?>';
+				var cardBase = '<?php echo dol_buildpath('/comm/action/card.php', 1); ?>';
+
+				function formatLocal(iso) {
+					if (!iso) return '';
+					var d = new Date(iso);
+					var pad = function(n) { return n < 10 ? '0' + n : n; };
+					return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+				}
+
+				function openEventPopup(event) {
+					var isEditable = event.startEditable !== false;
+					var title = typeof event.title === 'object' ? (event.title.html || '') : (event.title || '');
+					// Strip HTML for dialog title
+					var titleText = $('<div>').html(title).text().trim();
+
+					if (!isEditable) {
+						// Read-only popup for ICS / anniversaires
+						$('#ec-event-readonly-info').show().html(
+							'<p>' + (typeof event.title === 'object' ? title : titleText) + '</p>' +
+							(event.extendedProps && event.extendedProps.location ? '<p><?php echo $langs->trans('Location'); ?> : ' + event.extendedProps.location + '</p>' : '')
+						);
+						$('#ec-event-form > div:not(#ec-event-readonly-info)').hide();
+						$('#ec-event-popup').dialog({
+							title: titleText || '<?php echo dol_escape_js(\$langs->transnoentities('Event')); ?>',
+							width: 460,
+							modal: true,
+							buttons: { '<?php echo dol_escape_js($langs->trans('Close')); ?>': function() { $(this).dialog('close'); } }
+						});
+						return;
+					}
+
+					// Editable Dolibarr event: fetch full details
+					$('#ec-event-form > div').show();
+					$('#ec-event-readonly-info').hide();
+					$.ajax({
+						url: ajaxUrl,
+						dataType: 'json',
+						data: { action: 'getaction', id: event.id, token: token },
+						success: function(data) {
+							if (!data || !data.id) return;
+							$('#ec-event-id').val(data.id);
+							$('#ec-event-label').val(data.label);
+							$('#ec-event-location').val(data.location || '');
+							$('#ec-event-note').val(data.note || '');
+							$('#ec-event-percent').val(data.percent !== undefined ? data.percent : -1);
+							$('#ec-event-start').val(data.start);
+							$('#ec-event-end').val(data.end);
+							$('#ec-event-allday').prop('checked', !!data.fulldayevent);
+							toggleAllDay(!!data.fulldayevent);
+
+							var buttons = {};
+							buttons['<?php echo dol_escape_js($langs->transnoentities('Save')); ?>'] = function() {
+								$.ajax({
+									url: ajaxUrl,
+									method: 'POST',
+									dataType: 'json',
+									data: {
+										action: 'updateaction',
+										token: token,
+										id: $('#ec-event-id').val(),
+										label: $('#ec-event-label').val(),
+										location: $('#ec-event-location').val(),
+										note: $('#ec-event-note').val(),
+										percent: $('#ec-event-percent').val(),
+										start: $('#ec-event-start').val(),
+										end: $('#ec-event-end').val(),
+										fulldayevent: $('#ec-event-allday').is(':checked') ? 1 : 0
+									},
+									success: function() {
+										$('#ec-event-popup').dialog('close');
+										ec.refetchEvents();
+									}
+								});
+							};
+							buttons['<?php echo dol_escape_js($langs->transnoentities('Delete')); ?>'] = function() {
+								if (!confirm('<?php echo dol_escape_js($langs->trans('ConfirmDeleteObject')); ?>')) return;
+								$.ajax({
+									url: ajaxUrl,
+									method: 'POST',
+									dataType: 'json',
+									data: { action: 'deleteevent', token: token, schedule: JSON.stringify({ id: data.id }) },
+									success: function() {
+										$('#ec-event-popup').dialog('close');
+										ec.refetchEvents();
+									}
+								});
+							};
+							buttons['<?php echo dol_escape_js($langs->transnoentities('IDreamANewCalendarOpenCard')); ?>'] = function() {
+								window.open(cardBase + '?id=' + data.id, '_blank');
+							};
+							buttons['<?php echo dol_escape_js($langs->transnoentities('Close')); ?>'] = function() {
+								$(this).dialog('close');
+							};
+
+							if ($('#ec-event-popup').hasClass('ui-dialog-content')) {
+								$('#ec-event-popup').dialog('option', 'buttons', buttons);
+								$('#ec-event-popup').dialog('option', 'title', data.label || '<?php echo dol_escape_js(\$langs->transnoentities('Event')); ?>');
+								$('#ec-event-popup').dialog('open');
+							} else {
+								$('#ec-event-popup').dialog({
+									title: data.label || '<?php echo dol_escape_js(\$langs->transnoentities('Event')); ?>',
+									width: 500,
+									modal: true,
+									buttons: buttons
+								});
+							}
+						}
+					});
+				}
+
+				function toggleAllDay(allDay) {
+					if (allDay) {
+						$('#ec-event-start').attr('type', 'date');
+						$('#ec-event-end').attr('type', 'date');
+					} else {
+						$('#ec-event-start').attr('type', 'datetime-local');
+						$('#ec-event-end').attr('type', 'datetime-local');
+					}
+				}
+
+				$('#ec-event-allday').on('change', function() {
+					toggleAllDay($(this).is(':checked'));
+				});
+
+				// Hook into EventCalendar via global ec reference (set after create)
+				document.addEventListener('DOMContentLoaded', function() {
+					ec.setOption('eventClick', function(info) {
+						openEventPopup(info.event);
+					});
+				});
+			})();
+			</script>
+
 			<?php
 			//print dol_get_fiche_end();
 			// End of page

@@ -173,6 +173,80 @@ switch ($action) {
 		}
 		print json_encode([]);
 		break;
+	case 'getaction':
+		$id = GETPOSTINT('id');
+		if (!$id || !$user->hasRight('agenda', 'myactions', 'read')) {
+			print json_encode([]);
+			break;
+		}
+		$action = new ActionComm($db);
+		if ($action->fetch($id) <= 0) {
+			print json_encode([]);
+			break;
+		}
+		$canEditAction = !($action->type_code == 'AC_OTH_AUTO' || ($user->id != $action->userownerid && !$user->hasRight('agenda', 'allactions', 'create')));
+		$tz = new DateTimeZone((new DateTime())->getTimezone()->getName());
+		$dtstart = new DateTime('@' . $action->datep);
+		$dtstart->setTimezone($tz);
+		$dtend = !empty($action->datef) ? new DateTime('@' . $action->datef) : null;
+		if ($dtend) {
+			$dtend->setTimezone($tz);
+		}
+		print json_encode([
+			'id'           => (int) $action->id,
+			'label'        => $action->label,
+			'note'         => $action->note_private,
+			'percent'      => (int) $action->percentage,
+			'location'     => $action->location,
+			'fulldayevent' => (bool) $action->fulldayevent,
+			'start'        => $dtstart->format('Y-m-d\TH:i'),
+			'end'          => $dtend ? $dtend->format('Y-m-d\TH:i') : $dtstart->format('Y-m-d\TH:i'),
+			'startEditable' => $canEditAction,
+		]);
+		break;
+	case 'updateaction':
+		$id = GETPOSTINT('id');
+		if (!$id) {
+			print json_encode(['error' => 'no id']);
+			break;
+		}
+		$action = new ActionComm($db);
+		if ($action->fetch($id) <= 0) {
+			print json_encode(['error' => 'not found']);
+			break;
+		}
+		$canEditAction = !($action->type_code == 'AC_OTH_AUTO' || ($user->id != $action->userownerid && !$user->hasRight('agenda', 'allactions', 'create')));
+		if (!$canEditAction) {
+			print json_encode(['error' => 'not allowed']);
+			break;
+		}
+		$action->fetch_optionals();
+		$action->fetch_userassigned();
+		$action->fetchObjectLinked();
+		$action->oldcopy = clone $action;
+		$tz = new DateTimeZone((new DateTime())->getTimezone()->getName());
+		$action->label       = GETPOST('label', 'alphanohtml');
+		$action->note_private = GETPOST('note', 'restricthtml');
+		$action->percentage  = GETPOSTINT('percent');
+		$action->location    = GETPOST('location', 'alphanohtml');
+		$action->fulldayevent = GETPOSTINT('fulldayevent') ? 1 : 0;
+		$startStr = GETPOST('start', 'alphanohtml');
+		$endStr   = GETPOST('end', 'alphanohtml');
+		if ($startStr) {
+			$dtstart = new DateTime($startStr, $tz);
+			$action->datep = $dtstart->getTimestamp();
+		}
+		if ($endStr) {
+			$dtend = new DateTime($endStr, $tz);
+			$action->datef = $dtend->getTimestamp();
+		}
+		$res = $action->update($user);
+		if ($res < 0) {
+			print json_encode(['error' => $action->error]);
+		} else {
+			print json_encode(['success' => true, 'id' => (int) $id]);
+		}
+		break;
 	case 'getcustomers':
 		$filterkey = GETPOST('q', 'alphanohtml');
 		$page = max(1, GETPOSTINT('page'));

@@ -56,3 +56,4 @@ CHECKLASTVERSION_EXTERNALMODULE=Forcer la vérification des versions des modules
 MAIN_STORE_FULL_EVENT_IN_GMT=Enregistrer les évènements sur une journée au format GMT (non rétroactif pour les évènements déjà enregistrés)
 AGENDA_ALL_CALENDARS=Voir tous les agendas utilisateurs par défaut
 ListWeek=Liste semaine
+IDreamANewCalendarOpenCard=Voir la fiche
