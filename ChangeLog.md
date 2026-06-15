@@ -16,6 +16,9 @@
 * Calendriers ICS externes : correction du chargement dans EventCalendar v5. ([@frederic34](https://github.com/frederic34))
 * Événements en lecture seule (ICS, anniversaires) : glisser-déposer et redimensionnement désormais bloqués via `startEditable: false` / `durationEditable: false`. ([@frederic34](https://github.com/frederic34))
 * Famille du module corrigée : `agenda` → `projects`. ([@frederic34](https://github.com/frederic34))
+* Trigger `ACTION_DELETE` : guard contre `$object->oldcopy` null (suppressions en cascade sans `fetch` préalable). ([@frederic34](https://github.com/frederic34))
+* Boutons de dialogue : `Close` remplacé par `CloseWindowShort` pour un libellé cohérent avec Dolibarr. ([@frederic34](https://github.com/frederic34))
+* Dépendance `modPrune` supprimée du descripteur de module (jamais utilisée dans le code). ([@frederic34](https://github.com/frederic34))
 
 #### :house: Internal
 * GitHub Actions restructurés : `main.yml` = CI lint pur (PHPCS, Parallel Lint, VarDump) ; `changelog.yml` = release (traductions + bump version + zip). Suppression de `lerna-changelog` (incompatible avec les commits directs). Correction de la boucle infinie de bump. Mise à jour des actions : `checkout@v4`, `setup-node@v4` + Node 22, `git-auto-commit-action@v5`. ([@frederic34](https://github.com/frederic34))
