@@ -1207,6 +1207,15 @@ class ActionsIDreamANewCalendar
 				var token   = '<?php echo newToken(); ?>';
 				var cardBase = '<?php echo dol_buildpath('/comm/action/card.php', 1); ?>';
 
+				// Allow CKEditor dropdowns to work inside a jQuery UI modal dialog
+				if (typeof CKEDITOR !== 'undefined') {
+					$.widget('ui.dialog', $.ui.dialog, {
+						_allowInteraction: function(event) {
+							return !!$(event.target).closest('.cke_dialog, .cke').length || this._super(event);
+						}
+					});
+				}
+
 				function formatLocal(iso) {
 					if (!iso) return '';
 					var d = new Date(iso);
@@ -1224,7 +1233,8 @@ class ActionsIDreamANewCalendar
 						// Read-only popup for ICS / anniversaires
 						$('#ec-event-readonly-info').show().html(
 							'<p>' + (typeof event.title === 'object' ? title : titleText) + '</p>' +
-							(event.extendedProps && event.extendedProps.location ? '<p><?php echo $langs->trans('Location'); ?> : ' + event.extendedProps.location + '</p>' : '')
+							(event.extendedProps && event.extendedProps.location ? '<p><?php echo $langs->trans('Location'); ?> : ' + event.extendedProps.location + '</p>' : '') +
+							(event.body ? '<div style="margin-top:.5em">' + event.body + '</div>' : '')
 						);
 						$('#ec-event-form > div:not(#ec-event-readonly-info)').hide();
 						$('#ec-event-popup').dialog({
@@ -1248,7 +1258,6 @@ class ActionsIDreamANewCalendar
 							$('#ec-event-id').val(data.id);
 							$('#ec-event-label').val(data.label);
 							$('#ec-event-location').val(data.location || '');
-							$('#ec-event-note').val(data.note || '');
 							$('#ec-event-percent').val(data.percent !== undefined ? data.percent : -1);
 							$('#ec-event-start').val(data.start);
 							$('#ec-event-end').val(data.end);
@@ -1267,7 +1276,7 @@ class ActionsIDreamANewCalendar
 										id: $('#ec-event-id').val(),
 										label: $('#ec-event-label').val(),
 										location: $('#ec-event-location').val(),
-										note: $('#ec-event-note').val(),
+										note: ecNoteGet(),
 										percent: $('#ec-event-percent').val(),
 										start: $('#ec-event-start').val(),
 										end: $('#ec-event-end').val(),
@@ -1311,6 +1320,7 @@ class ActionsIDreamANewCalendar
 									buttons: buttons
 								});
 							}
+							ecNoteInit(data.note || '');
 						}
 					});
 				}
@@ -1330,11 +1340,41 @@ class ActionsIDreamANewCalendar
 					return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
 				}
 
+				function ecNoteInit(val) {
+					if (typeof CKEDITOR !== 'undefined') {
+						if (CKEDITOR.instances['ec-event-note']) {
+							CKEDITOR.instances['ec-event-note'].destroy(true);
+						}
+						var ed = CKEDITOR.replace('ec-event-note', {
+						toolbar: [['Bold', 'Italic', 'Underline', '-', 'RemoveFormat'], ['NumberedList', 'BulletedList'], ['Link', 'Unlink'], ['Source']],
+						height: 150,
+						width: '100%'
+					});
+						ed.on('instanceReady', function() { ed.setData(val || ''); });
+					} else {
+						$('#ec-event-note').val(val || '');
+					}
+				}
+
+				function ecNoteGet() {
+					if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances['ec-event-note']) {
+						return CKEDITOR.instances['ec-event-note'].getData();
+					}
+					return $('#ec-event-note').val();
+				}
+
+				function ecNoteDestroy() {
+					if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances['ec-event-note']) {
+						CKEDITOR.instances['ec-event-note'].destroy(true);
+					}
+				}
+
+				$('#ec-event-popup').on('dialogclose', function() { ecNoteDestroy(); });
+
 				function openCreatePopup(start, end, allDay) {
 					$('#ec-event-id').val('');
 					$('#ec-event-label').val('');
 					$('#ec-event-location').val('');
-					$('#ec-event-note').val('');
 					$('#ec-event-percent').val(-1);
 					$('#ec-event-allday').prop('checked', !!allDay);
 					toggleAllDay(!!allDay);
@@ -1354,7 +1394,7 @@ class ActionsIDreamANewCalendar
 								token: token,
 								label: $('#ec-event-label').val(),
 								location: $('#ec-event-location').val(),
-								note: $('#ec-event-note').val(),
+								note: ecNoteGet(),
 								percent: $('#ec-event-percent').val(),
 								start: $('#ec-event-start').val(),
 								end: $('#ec-event-end').val(),
@@ -1379,6 +1419,7 @@ class ActionsIDreamANewCalendar
 					} else {
 						$('#ec-event-popup').dialog({ title: title, width: 500, modal: true, buttons: buttons });
 					}
+					ecNoteInit('');
 				}
 
 				$('#ec-event-allday').on('change', function() {
