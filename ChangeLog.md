@@ -2,6 +2,7 @@
 ## Unreleased (2026-06-15)
 
 #### :rocket: Enhancement
+* Affichage du lieu : le lieu de l'événement apparaît sous le titre dans le bloc calendrier, précédé du pictogramme 📍, tronqué si trop long. ([@frederic34](https://github.com/frederic34))
 * Création rapide : cliquer-glisser sur une plage horaire ouvre un popup de création pré-rempli avec la date et l'heure sélectionnées. Boutons Ajouter, Clôturer. ([@frederic34](https://github.com/frederic34))
 * Masquage des calendriers : décocher un calendrier dans le panneau gauche masque instantanément ses événements via CSS, sans rechargement. ([@frederic34](https://github.com/frederic34))
 * Popup d'édition rapide : clic sur un événement ouvre un dialogue jQuery UI avec tous les champs éditables (libellé, dates, lieu, pourcentage, note). Boutons Enregistrer, Supprimer, Voir la fiche, Clôturer. Les événements en lecture seule (ICS, anniversaires, auto) affichent un dialogue d'information non modifiable. ([@frederic34](https://github.com/frederic34))

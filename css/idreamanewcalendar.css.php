@@ -371,3 +371,14 @@ input[type='checkbox'].ec-calendar-checkbox-round + span {
   border: solid 2px;
   background: transparent;
 }
+
+.ec-event-location {
+  font-size: 0.8em;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ec-event-location::before {
+  content: '📍 ';
+}
