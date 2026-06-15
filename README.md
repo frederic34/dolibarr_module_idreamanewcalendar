@@ -16,6 +16,9 @@ Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dol
   - [Calendriers externes (par utilisateur)](#calendriers-externes-par-utilisateur)
 - [Fonctionnalités](#fonctionnalités)
   - [Vue calendrier](#vue-calendrier)
+  - [Vue liste](#vue-liste)
+  - [Indicateurs visuels](#indicateurs-visuels)
+  - [Couleur des événements](#couleur-des-événements)
   - [Filtres et recherche](#filtres-et-recherche)
   - [Masquage des calendriers](#masquage-des-calendriers)
   - [Création rapide par sélection de plage](#création-rapide-par-sélection-de-plage)
@@ -134,14 +137,24 @@ Les constantes sont stockées par utilisateur avec le pattern `AGENDA_EXT_{FIELD
 
 ### Vue calendrier
 
-Le module remplace les trois onglets natifs de l'agenda (Mois, Semaine, Jour) par un onglet unique propulsé par la bibliothèque **EventCalendar**. Quatre vues sont disponibles, sélectionnables via la barre d'outils :
+Le module remplace les trois onglets natifs de l'agenda (Mois, Semaine, Jour) par un onglet unique propulsé par la bibliothèque **EventCalendar**. Huit vues sont disponibles, réparties en deux groupes dans la barre d'outils :
 
-| Vue | Bouton | Description |
-|---|---|---|
-| Mois | Vue mois | Grille mensuelle |
-| Semaine | Vue semaine | Grille hebdomadaire avec créneaux horaires (08h–22h) |
-| Jour | Vue jour | Grille journalière |
-| Liste | Liste semaine | Liste des événements de la semaine |
+**Vues grille**
+
+| Vue | Description |
+|---|---|
+| Mois | Grille mensuelle |
+| Semaine | Grille hebdomadaire avec créneaux horaires (08h–22h) |
+| Jour | Grille journalière |
+
+**Vues liste**
+
+| Vue | Description |
+|---|---|
+| Jour | Liste des événements du jour |
+| Semaine | Liste des événements de la semaine |
+| Mois | Liste des événements du mois |
+| Année | Liste des événements de l'année |
 
 La vue par défaut est contrôlée par la préférence utilisateur `AGENDA_DEFAULT_VIEW`. Le premier jour de la semaine est configurable via `MAIN_START_WEEK` (défaut : 1 = lundi).
 
@@ -159,9 +172,52 @@ Le label **Journée** (all-day) est traduit dans la langue de l'utilisateur.
 
 ![Vue jour](img/screenshots/vue-jour.png)
 
-**Vue liste**
+### Vue liste
+
+Les vues liste affichent les événements sous forme de tableau chronologique, avec titre, horaire et couleur du type d'événement. Pratique pour avoir un aperçu rapide sur une longue période.
+
+**Vue liste mois**
 
 ![Vue liste](img/screenshots/vue-liste.png)
+
+### Indicateurs visuels
+
+Chaque bloc d'événement dans le calendrier affiche jusqu'à quatre indicateurs superposés :
+
+| Indicateur | Position | Condition |
+|---|---|---|
+| Barre de progression | Bas de l'événement (2 px) | `percentage >= 0` |
+| Badge retard `!` (rouge) | Coin supérieur droit | `percentage < 100` et date de fin dépassée |
+| Badge objets liés `⛓` | Coin supérieur droit | L'événement a des objets liés (facture, commande, etc.) |
+| Badge participants `+N` | Coin supérieur droit | Plus d'un participant assigné |
+
+La barre de progression est blanche semi-transparente et proportionnelle au pourcentage d'avancement. Les badges sont superposés en rangée horizontale au coin droit.
+
+### Couleur des événements
+
+La couleur de fond de chaque événement correspond à son **type d'action**. L'ordre de priorité est le suivant :
+
+1. Couleur définie dans **Accueil → Configuration → Dictionnaires → Types d'action** (champ couleur de l'admin Dolibarr).
+2. Si aucune couleur n'est définie, une **palette de repli** intégrée est utilisée :
+
+| Type | Couleur |
+|---|---|
+| `AC_TEL` | `#4CAF50` (vert) |
+| `AC_FAX` | `#9E9E9E` (gris) |
+| `AC_PROP` | `#FF9800` (orange) |
+| `AC_EMAIL` | `#2196F3` (bleu) |
+| `AC_RDV` | `#F44336` (rouge) |
+| `AC_EMAIL_IN` | `#03A9F4` (bleu clair) |
+| `AC_COM` | `#9C27B0` (violet) |
+| `AC_FAC` | `#FFC107` (ambre) |
+| `AC_SHIP` | `#009688` (teal) |
+| `AC_INT` | `#FF5722` (orange foncé) |
+| `AC_OTH` | `#607D8B` (gris bleu) |
+| *(autres)* | `#607D8B` (gris bleu) |
+
+La couleur du texte (noir ou blanc) est calculée automatiquement d'après la luminosité HSL de la couleur de fond, via le seuil `IDREAMANEWCALENDAR_LIGTHNESS_SWAP`.
+
+En plus de la couleur de fond, chaque événement affiche une **fine bordure gauche colorée** avec la couleur personnelle de l'utilisateur propriétaire (champ *couleur* de la fiche utilisateur Dolibarr).
 
 ### Filtres et recherche
 
@@ -218,11 +274,11 @@ Un clic sur un événement existant ouvre une fenêtre de dialogue jQuery UI.
 | Journée | Case à cocher — bascule les champs entre date et datetime |
 | Lieu | Adresse ou salle |
 | Pourcentage | Avancement (Non applicable, 0 %, 25 %, 50 %, 75 %, 100 %) |
-| Note | Texte libre (note privée) |
+| Note | Note privée — éditée via **CKEditor** (si disponible) avec barre d'outils réduite : gras, italique, souligné, listes, lien, source HTML. Affichage brut `<textarea>` si CKEditor absent. |
 
 Boutons disponibles : **Enregistrer** (AJAX `updateaction`), **Supprimer** (AJAX `deleteevent`), **Voir la fiche** (ouvre la fiche Dolibarr dans un nouvel onglet), **Clôturer**.
 
-**Événement en lecture seule** (ICS externe, anniversaire, événement auto, autre propriétaire) : affiche un dialogue d'information non modifiable avec un seul bouton **Clôturer**.
+**Événement en lecture seule** (ICS externe, anniversaire, événement auto, autre propriétaire) : affiche un dialogue d'information non modifiable avec la description complète de l'événement (HTML ou texte ICS), et un seul bouton **Clôturer**.
 
 ### Glisser-déposer et redimensionnement
 
@@ -431,7 +487,9 @@ Chaque événement retourné est un objet JSON compatible EventCalendar v5 :
   "extendedProps": {
     "location": "Paris",
     "attendees": ["<span>...</span>"],
-    "borderColor": "#e87e04"
+    "borderColor": "#e87e04",
+    "percent": 50,
+    "hasLinkedObjects": true
   }
 }
 ```

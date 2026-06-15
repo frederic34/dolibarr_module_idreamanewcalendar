@@ -10,6 +10,12 @@
 * Filtre utilisateurs converti en Select2 à défilement infini. ([@frederic34](https://github.com/frederic34))
 * Largeur uniforme de 200 px pour tous les selects de filtrage. ([@frederic34](https://github.com/frederic34))
 * Label « Journée » (all-day) traduit via l'option `allDayContent` d'EventCalendar. ([@frederic34](https://github.com/frederic34))
+* Description HTML dans le popup : la description de l'événement (note HTML ou description ICS) est affichée dans le dialogue de lecture seule. ([@frederic34](https://github.com/frederic34))
+* CKEditor pour la note : le champ note du popup d'édition et de création utilise CKEditor (si disponible) avec une barre d'outils réduite (gras, italique, souligné, listes, lien, source HTML). ([@frederic34](https://github.com/frederic34))
+* Bordure gauche colorée : chaque bloc d'événement affiche une fine bordure gauche (3 px) de la couleur personnelle de l'utilisateur propriétaire. ([@frederic34](https://github.com/frederic34))
+* Indicateurs visuels sur les blocs : barre de progression (pourcentage), badge retard `!`, badge objets liés `⛓`, badge participants `+N`. ([@frederic34](https://github.com/frederic34))
+* Couleur par type d'événement : la couleur de fond est issue du dictionnaire des types d'action, avec palette de repli intégrée quand aucune couleur n'est définie en admin. ([@frederic34](https://github.com/frederic34))
+* Vues liste : ajout des vues `listDay`, `listWeek`, `listMonth`, `listYear` dans la barre d'outils, en complément des vues grille. ([@frederic34](https://github.com/frederic34))
 
 #### :bug: Bug Fix
 * Anti-scintillement : fusion de toutes les sources d'événements (Dolibarr, anniversaires, ICS) en un seul `Promise.all` → `successCallback` appelé une seule fois, plus de flash au rechargement. ([@frederic34](https://github.com/frederic34))
@@ -20,13 +26,14 @@
 * Trigger `ACTION_DELETE` : guard contre `$object->oldcopy` null (suppressions en cascade sans `fetch` préalable). ([@frederic34](https://github.com/frederic34))
 * Boutons de dialogue : `Close` remplacé par `CloseWindowShort` pour un libellé cohérent avec Dolibarr. ([@frederic34](https://github.com/frederic34))
 * Dépendance `modPrune` supprimée du descripteur de module (jamais utilisée dans le code). ([@frederic34](https://github.com/frederic34))
+* Descripteur de module : conditions d'onglets migrées de `$conf->idreamanewcalendar->enabled` vers `isModEnabled()` et `$user->hasRight()` (API Dolibarr 20+). ([@frederic34](https://github.com/frederic34))
 
 #### :house: Internal
 * GitHub Actions restructurés : `main.yml` = CI lint pur (PHPCS, Parallel Lint, VarDump) ; `changelog.yml` = release (traductions + bump version + zip). Suppression de `lerna-changelog` (incompatible avec les commits directs). Correction de la boucle infinie de bump. Mise à jour des actions : `checkout@v4`, `setup-node@v4` + Node 22, `git-auto-commit-action@v5`. ([@frederic34](https://github.com/frederic34))
 
 #### :memo: Documentation
-* README entièrement mis à jour : nouvelles fonctionnalités, famille du module, API AJAX complète. ([@frederic34](https://github.com/frederic34))
-* Captures d'écran régénérées (Dolibarr 24.0-beta). Nouvelles : `popup-edition.png`, `popup-creation.png`, `calendrier-masque.png`. ([@frederic34](https://github.com/frederic34))
+* README entièrement mis à jour : nouvelles fonctionnalités, famille du module, API AJAX complète. Ajout des sections Vue liste, Indicateurs visuels, Couleur des événements. ([@frederic34](https://github.com/frederic34))
+* Captures d'écran régénérées (Dolibarr 24.0-beta). Nouvelles : `popup-edition.png`, `popup-creation.png`, `calendrier-masque.png`, `vue-liste.png`. ([@frederic34](https://github.com/frederic34))
 
 #### Committers: 1
 - Frédéric FRANCE ([@frederic34](https://github.com/frederic34))
