@@ -1277,7 +1277,7 @@ class ActionsIDreamANewCalendar
 								});
 							};
 							buttons['<?php echo dol_escape_js($langs->transnoentities('Delete')); ?>'] = function() {
-								if (!confirm('<?php echo dol_escape_js($langs->trans('ConfirmDeleteObject')); ?>')) return;
+								if (!confirm('<?php echo dol_escape_js($langs->transnoentities('ConfirmDeleteObject')); ?>')) return;
 								$.ajax({
 									url: ajaxUrl,
 									method: 'POST',
