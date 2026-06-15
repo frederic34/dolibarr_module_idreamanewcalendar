@@ -58,7 +58,7 @@ Module de remplacement du calendrier natif de [Dolibarr ERP CRM](https://www.dol
 1. Téléchargez le ZIP du module (`module_idreamanewcalendar-x.y.z.zip`).
 2. Dans Dolibarr, allez dans **Accueil → Configuration → Modules → Déployer un module externe**.
 3. Uploadez le fichier ZIP.
-4. Activez le module dans la liste des modules (famille **Agenda**).
+4. Activez le module dans la liste des modules (famille **Projets**).
 
 ### Depuis un dépôt Git
 
@@ -307,7 +307,7 @@ idreamanewcalendar/
 | Propriété | Valeur |
 |---|---|
 | ID de module (`numero`) | `14011966` |
-| Famille | `agenda` |
+| Famille | `projects` |
 | PHP minimum | 7.4 |
 | Dolibarr minimum | 20.0 |
 | Icône | `action` (calendrier natif Dolibarr) |
