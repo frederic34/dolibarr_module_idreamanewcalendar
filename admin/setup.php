@@ -166,9 +166,6 @@ if ($action == 'edit') {
 	} else {
 		print '<br>' . $langs->trans("NothingToSetup");
 	}
-	print '<div class="tabsAction">';
-	print '<a class="butAction" href="' . $_SERVER["PHP_SELF"] . '?action=edit">' . $langs->trans("Modify") . '</a>';
-	print '</div>';
 
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
