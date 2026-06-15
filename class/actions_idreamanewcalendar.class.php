@@ -722,7 +722,7 @@ class ActionsIDreamANewCalendar
 						const calendarSelectList = document.getElementById('calendarSelectList');
 						const calendars = await generateCalendarList();
 						calendars.forEach(function(calendar) {
-							console.log(calendar);
+							calendar.checked = true;
 							CalendarList.push(calendar);
 							html.push('<div class=\"lnb-calendars-item\"><label>' +
 								'<input type=\"checkbox\" class=\"ec-calendar-checkbox-round\" value=\"' + calendar.calendarId + '\" checked>' +
@@ -797,15 +797,26 @@ class ActionsIDreamANewCalendar
 											action: 'getevents', resourceId: 2
 										})})
 									];
+									var fetchCalendarIds = [1, 2];
 									CalendarList.forEach(function(calendar) {
 										if (calendar.calendarId !== 1 && calendar.calendarId !== 2) {
 											fetches.push($.ajax({ method: 'GET', url: ecUrl, dataType: 'json', data: Object.assign({}, base, {
 												action: 'getevents', resourceId: 3, calendarName: calendar.name
 											})}));
+											fetchCalendarIds.push(calendar.calendarId);
 										}
 									});
 									Promise.all(fetches).then(function(results) {
-										successCallback(results.reduce(function(acc, r) { return acc.concat(r); }, []));
+										var all = [];
+										results.forEach(function(events, i) {
+											var cid = fetchCalendarIds[i];
+											events.forEach(function(ev) {
+												ev.extendedProps = ev.extendedProps || {};
+												ev.extendedProps.calendarId = cid;
+												all.push(ev);
+											});
+										});
+										successCallback(all);
 									}).catch(function() {
 										failureCallback();
 									});
@@ -871,6 +882,10 @@ class ActionsIDreamANewCalendar
 					},
 					dayMaxEvents: true,
 					nowIndicator: true,
+					eventClassNames: function(info) {
+						var cid = info.event.extendedProps && info.event.extendedProps.calendarId;
+						return cid ? ['ec-cal-' + cid] : [];
+					},
 					editable: true,
 					selectable: true,
 					select: function (info) {
@@ -1116,31 +1131,28 @@ class ActionsIDreamANewCalendar
 				function findCalendar(id) {
 					var found;
 					CalendarList.forEach(function(calendar) {
-						if (calendar.id === id) {
+						if (String(calendar.calendarId) === String(id)) {
 							found = calendar;
 						}
 					});
-
 					return found || CalendarList[0];
 				}
 				function refreshScheduleVisibility() {
+					var style = document.getElementById('ec-calendar-visibility');
+					if (!style) {
+						style = document.createElement('style');
+						style.id = 'ec-calendar-visibility';
+						document.head.appendChild(style);
+					}
+					var rules = [];
+					CalendarList.forEach(function(calendar) {
+						if (!calendar.checked) {
+							rules.push('.ec-cal-' + calendar.calendarId + ' { display: none !important; }');
+						}
+					});
+					style.textContent = rules.join('\n');
+
 					var calendarElements = Array.prototype.slice.call(document.querySelectorAll('#calendarSelectList input'));
-
-					//CalendarList.forEach(function(calendar) {
-						//cal.toggleSchedules(calendar.id, !calendar.checked, false);
-						// if (!calendar.checked) {
-						//     console.log('clearing timer for calendar ' + calendar.id);
-						//     clearInterval(calendar.timer);
-						// } else {
-						//     console.log('activate timer for calendar ' + calendar.id);
-						//     calendar.timer = setInterval(function() {
-						//         console.log('updating calendar ' + calendar.id);
-						//     }, 5000);
-						// }
-					//});
-
-					//cal.render(true);
-
 					calendarElements.forEach(function(input) {
 						var span = input.nextElementSibling;
 						span.style.backgroundColor = input.checked ? span.style.borderColor : 'transparent';
