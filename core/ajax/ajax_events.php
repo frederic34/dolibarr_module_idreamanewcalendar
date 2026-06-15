@@ -174,9 +174,11 @@ switch ($action) {
 		print json_encode([]);
 		break;
 	case 'getcustomers':
-		$response = [];
-		$limit = 100;
 		$filterkey = GETPOST('q', 'alphanohtml');
+		$page = max(1, GETPOSTINT('page'));
+		$pageSize = 20;
+		$offset = ($page - 1) * $pageSize;
+		$results = [];
 		// On recherche les societes
 		$sql = "SELECT s.rowid, s.nom as name, s.name_alias, s.client, s.fournisseur, s.code_client, s.code_fournisseur";
 		if (getDolGlobalInt('COMPANY_SHOW_ADDRESS_SELECTLIST')) {
@@ -228,32 +230,31 @@ switch ($action) {
 			$sql .= ")";
 		}
 		$sql .= $db->order("nom", "ASC");
-		$sql .= $db->plimit($limit, 0);
-		// Build output string
+		$sql .= $db->plimit($pageSize + 1, $offset);
 		$resql = $db->query($sql);
+		$count = 0;
 		while ($resql && $obj = $db->fetch_object($resql)) {
-			$label = '';
-			if (getDolGlobalInt('SOCIETE_ADD_REF_IN_LIST')) {
-				if (($obj->client) && (!empty($obj->code_client))) {
-					$label = $obj->code_client . ' - ';
+			if ($count < $pageSize) {
+				$label = '';
+				if (getDolGlobalInt('SOCIETE_ADD_REF_IN_LIST')) {
+					if (($obj->client) && (!empty($obj->code_client))) {
+						$label = $obj->code_client . ' - ';
+					}
+					if (($obj->fournisseur) && (!empty($obj->code_fournisseur))) {
+						$label .= $obj->code_fournisseur . ' - ';
+					}
+					$label .= ' ' . $obj->name;
+				} else {
+					$label = $obj->name;
 				}
-				if (($obj->fournisseur) && (!empty($obj->code_fournisseur))) {
-					$label .= $obj->code_fournisseur . ' - ';
+				if (!empty($obj->name_alias)) {
+					$label .= ' (' . $obj->name_alias . ')';
 				}
-				$label .= ' ' . $obj->name;
-			} else {
-				$label = $obj->name;
+				$results[] = ['id' => $obj->rowid, 'text' => $label];
 			}
-			if (!empty($obj->name_alias)) {
-				$label .= ' (' . $obj->name_alias . ')';
-			}
-			$response[] = [
-				'id' => $obj->rowid,
-				'value' => $obj->rowid,
-				'text' => $label,
-			];
+			$count++;
 		}
-		print json_encode($response);
+		print json_encode(['results' => $results, 'pagination' => ['more' => $count > $pageSize]]);
 		break;
 	case 'getprojects':
 		require_once DOL_DOCUMENT_ROOT . '/projet/class/project.class.php';

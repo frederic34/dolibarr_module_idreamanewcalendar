@@ -647,7 +647,7 @@ class ActionsIDreamANewCalendar
 
 			if (isModEnabled('societe') && $user->hasRight('societe', 'lire')) {
 				print '<span id="search-customers" class="search-customers">';
-				print '    <input class="form-control customersAutoComplete" type="text" placeholder="' . $langs->trans('ThirdParty') . '" autocomplete="off">';
+				print '    <select id="customersAutoComplete" class="customersAutoComplete" style="width:100%"></select>';
 				print '</span>';
 				print '<span id="search-states" class="search-states">';
 				print '    <select id="statesAutoComplete" class="statesAutoComplete" multiple title="' . $langs->trans('StateShort') . '"></select>';
@@ -969,7 +969,7 @@ class ActionsIDreamANewCalendar
 						searchActionCode = '';
 						$('.searchAll').val('');
 						$('.usersAutoComplete').val(null).trigger('change');
-						$('.customersAutoComplete').val('');
+						$('.customersAutoComplete').val(null).trigger('change');
 						$('.projectsAutoComplete').val('');
 						$('#project_id').val(0);
 						$('.statesAutoComplete').val(null).trigger('change');
@@ -977,23 +977,27 @@ class ActionsIDreamANewCalendar
 						ec.refetchEvents();
 					});
 
-					// --- Filtre tiers ---
-					$('.customersAutoComplete').autocomplete({
-						minLength: 2,
-						source: function(request, response) {
-							$.getJSON(ajaxUrl, { action: 'getcustomers', q: request.term, token: token }, function(data) {
-								response($.map(data, function(item) {
-									return { label: item.text, value: item.text, id: item.id };
-								}));
-							});
-						},
-						select: function(event, ui) {
-							searchSocId = ui.item.id;
-							ec.refetchEvents();
-						},
-						change: function(event, ui) {
-							if (!ui.item) { searchSocId = 0; ec.refetchEvents(); }
+					// --- Filtre tiers (Select2 AJAX infinite scroll) ---
+					$('.customersAutoComplete').select2({
+						placeholder: '<?php echo dol_escape_js($langs->transnoentities('ThirdParty')); ?>',
+						allowClear: true,
+						width: '100%',
+						minimumInputLength: 0,
+						ajax: {
+							url: ajaxUrl,
+							dataType: 'json',
+							delay: 250,
+							data: function(params) {
+								return { action: 'getcustomers', q: params.term || '', page: params.page || 1, token: token };
+							},
+							processResults: function(data) {
+								return { results: data.results, pagination: { more: data.pagination.more } };
+							}
 						}
+					});
+					$('.customersAutoComplete').on('change', function() {
+						searchSocId = $(this).val() || 0;
+						ec.refetchEvents();
 					});
 
 					// --- Filtre projet ---
