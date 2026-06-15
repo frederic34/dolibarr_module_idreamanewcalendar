@@ -776,11 +776,19 @@ class ActionsIDreamANewCalendar
 									?? (info.event.title && typeof info.event.title === 'object' ? info.event.title.html : null);
 								const titleText = typeof info.event.title === 'string' ? info.event.title : null;
 								const location = info.event.extendedProps && info.event.extendedProps.location;
+								const userColor = info.event.extendedProps && info.event.extendedProps.borderColor;
 								const nodes = [createElement('div', 'ec-event-title', titleHtml, titleText)];
 								if (location) {
 									nodes.push(createElement('div', 'ec-event-location', null, location));
 								}
-								content = { domNodes: nodes };
+								if (userColor) {
+									const wrapper = document.createElement('div');
+									wrapper.style.cssText = 'border-left:3px solid ' + userColor + ';padding-left:4px;height:100%;box-sizing:border-box;';
+									nodes.forEach(function(n) { wrapper.appendChild(n); });
+									content = { domNodes: [wrapper] };
+								} else {
+									content = { domNodes: nodes };
+								}
 						}
 						return content;
 					},
