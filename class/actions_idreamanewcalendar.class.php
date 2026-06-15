@@ -775,20 +775,62 @@ class ActionsIDreamANewCalendar
 								const titleHtml = info.event.titleHTML
 									?? (info.event.title && typeof info.event.title === 'object' ? info.event.title.html : null);
 								const titleText = typeof info.event.title === 'string' ? info.event.title : null;
-								const location = info.event.extendedProps && info.event.extendedProps.location;
-								const userColor = info.event.extendedProps && info.event.extendedProps.borderColor;
-								const nodes = [createElement('div', 'ec-event-title', titleHtml, titleText)];
-								if (location) {
-									nodes.push(createElement('div', 'ec-event-location', null, location));
+								const props = info.event.extendedProps || {};
+								const userColor = props.borderColor;
+								const percent = (props.percent !== undefined) ? props.percent : -1;
+								const isLate = percent >= 0 && percent < 100
+									&& info.event.end && new Date() > info.event.end;
+
+								const wrapper = document.createElement('div');
+								wrapper.style.cssText = 'position:relative;height:100%;box-sizing:border-box;'
+									+ (userColor ? 'border-left:3px solid ' + userColor + ';padding-left:4px;' : '');
+
+								wrapper.appendChild(createElement('div', 'ec-event-title', titleHtml, titleText));
+								if (props.location) {
+									wrapper.appendChild(createElement('div', 'ec-event-location', null, props.location));
 								}
-								if (userColor) {
-									const wrapper = document.createElement('div');
-									wrapper.style.cssText = 'border-left:3px solid ' + userColor + ';padding-left:4px;height:100%;box-sizing:border-box;';
-									nodes.forEach(function(n) { wrapper.appendChild(n); });
-									content = { domNodes: [wrapper] };
-								} else {
-									content = { domNodes: nodes };
+
+								// Badges (top-right)
+								const badges = [];
+								if (isLate) {
+									const b = document.createElement('span');
+									b.title = '<?php echo dol_escape_js($langs->transnoentities('Late')); ?>';
+									b.style.cssText = 'background:rgba(220,40,40,.9);color:#fff;border-radius:3px;padding:0 3px;font-size:.65em;line-height:1.5;font-weight:bold;';
+									b.textContent = '!';
+									badges.push(b);
 								}
+								if (props.hasLinkedObjects) {
+									const b = document.createElement('span');
+									b.title = '<?php echo dol_escape_js($langs->transnoentities('LinkedObjects')); ?>';
+									b.style.cssText = 'background:rgba(0,0,0,.25);color:#fff;border-radius:3px;padding:0 3px;font-size:.65em;line-height:1.5;';
+									b.textContent = '⛓';
+									badges.push(b);
+								}
+								if (props.attendees && props.attendees.length > 1) {
+									const b = document.createElement('span');
+									b.title = props.attendees.length + ' <?php echo dol_escape_js($langs->transnoentities('Users')); ?>';
+									b.style.cssText = 'background:rgba(0,0,0,.25);color:#fff;border-radius:3px;padding:0 3px;font-size:.65em;line-height:1.5;';
+									b.textContent = '+' + props.attendees.length;
+									badges.push(b);
+								}
+								if (badges.length) {
+									const row = document.createElement('div');
+									row.style.cssText = 'position:absolute;top:1px;right:1px;display:flex;gap:2px;align-items:center;';
+									badges.forEach(function(b) { row.appendChild(b); });
+									wrapper.appendChild(row);
+								}
+
+								// Progress bar (bottom)
+								if (percent >= 0) {
+									const track = document.createElement('div');
+									track.style.cssText = 'position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(0,0,0,.15);';
+									const fill = document.createElement('div');
+									fill.style.cssText = 'height:100%;width:' + percent + '%;background:rgba(255,255,255,.75);';
+									track.appendChild(fill);
+									wrapper.appendChild(track);
+								}
+
+								content = { domNodes: [wrapper] };
 						}
 						return content;
 					},

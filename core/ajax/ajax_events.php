@@ -919,6 +919,8 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 					'attendees' => $assignedUsers,
 					// borderColor : The schedule border color
 					'borderColor' => $event->color,
+					'percent' => (int) $event->percentage,
+					'hasLinkedObjects' => !empty($event->linkedObjects),
 				]
 			];
 		}
