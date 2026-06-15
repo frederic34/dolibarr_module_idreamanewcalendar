@@ -204,6 +204,33 @@ switch ($action) {
 			'startEditable' => $canEditAction,
 		]);
 		break;
+	case 'createaction':
+		if (!$user->hasRight('agenda', 'myactions', 'create')) {
+			print json_encode(['error' => 'forbidden']);
+			break;
+		}
+		$action = new ActionComm($db);
+		$action->userownerid  = $user->id;
+		$action->type_code    = 'AC_OTH';
+		$action->transparency = 1;
+		$action->percentage   = -1;
+		$tz = new DateTimeZone((new DateTime())->getTimezone()->getName());
+		$action->label        = GETPOST('label', 'alphanohtml');
+		$action->note_private = GETPOST('note', 'restricthtml');
+		$action->percentage   = GETPOSTINT('percent') ?: -1;
+		$action->location     = GETPOST('location', 'alphanohtml');
+		$action->fulldayevent = GETPOSTINT('fulldayevent') ? 1 : 0;
+		$startStr = GETPOST('start', 'alphanohtml');
+		$endStr   = GETPOST('end', 'alphanohtml');
+		if ($startStr) {
+			$action->datep = (new DateTime($startStr, $tz))->getTimestamp();
+		}
+		if ($endStr) {
+			$action->datef = (new DateTime($endStr, $tz))->getTimestamp();
+		}
+		$res = $action->create($user);
+		print json_encode($res <= 0 ? ['error' => $action->error] : ['success' => true, 'id' => (int)$res]);
+		break;
 	case 'updateaction':
 		$id = GETPOSTINT('id');
 		if (!$id) {

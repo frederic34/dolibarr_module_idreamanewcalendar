@@ -889,12 +889,6 @@ class ActionsIDreamANewCalendar
 					editable: true,
 					selectable: true,
 					select: function (info) {
-						console.log(info);
-						ec.addEvent({
-							start: info.start,
-							end: info.end,
-							resourceId: 1
-						});
 						ec.unselect();
 					},
 					eventResize: function(info) {
@@ -1328,6 +1322,62 @@ class ActionsIDreamANewCalendar
 					}
 				}
 
+				function formatDate(d) {
+					var pad = function(n) { return n < 10 ? '0' + n : n; };
+					return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+				}
+
+				function openCreatePopup(start, end, allDay) {
+					$('#ec-event-id').val('');
+					$('#ec-event-label').val('');
+					$('#ec-event-location').val('');
+					$('#ec-event-note').val('');
+					$('#ec-event-percent').val(-1);
+					$('#ec-event-allday').prop('checked', !!allDay);
+					toggleAllDay(!!allDay);
+					$('#ec-event-start').val(allDay ? formatDate(start) : formatLocal(start.toISOString()));
+					$('#ec-event-end').val(allDay ? formatDate(end) : formatLocal(end.toISOString()));
+					$('#ec-event-form > div').show();
+					$('#ec-event-readonly-info').hide();
+
+					var buttons = {};
+					buttons['<?php echo dol_escape_js($langs->transnoentities('Add')); ?>'] = function() {
+						$.ajax({
+							url: ajaxUrl,
+							method: 'POST',
+							dataType: 'json',
+							data: {
+								action: 'createaction',
+								token: token,
+								label: $('#ec-event-label').val(),
+								location: $('#ec-event-location').val(),
+								note: $('#ec-event-note').val(),
+								percent: $('#ec-event-percent').val(),
+								start: $('#ec-event-start').val(),
+								end: $('#ec-event-end').val(),
+								fulldayevent: $('#ec-event-allday').is(':checked') ? 1 : 0
+							},
+							success: function(data) {
+								if (data && data.error) { alert(data.error); return; }
+								$('#ec-event-popup').dialog('close');
+								ec.refetchEvents();
+							}
+						});
+					};
+					buttons['<?php echo dol_escape_js($langs->transnoentities('Close')); ?>'] = function() {
+						$(this).dialog('close');
+					};
+
+					var title = '<?php echo dol_escape_js($langs->transnoentities('NewAction')); ?>';
+					if ($('#ec-event-popup').hasClass('ui-dialog-content')) {
+						$('#ec-event-popup').dialog('option', 'buttons', buttons);
+						$('#ec-event-popup').dialog('option', 'title', title);
+						$('#ec-event-popup').dialog('open');
+					} else {
+						$('#ec-event-popup').dialog({ title: title, width: 500, modal: true, buttons: buttons });
+					}
+				}
+
 				$('#ec-event-allday').on('change', function() {
 					toggleAllDay($(this).is(':checked'));
 				});
@@ -1336,6 +1386,10 @@ class ActionsIDreamANewCalendar
 				document.addEventListener('DOMContentLoaded', function() {
 					ec.setOption('eventClick', function(info) {
 						openEventPopup(info.event);
+					});
+					ec.setOption('select', function(info) {
+						openCreatePopup(info.start, info.end, info.allDay);
+						ec.unselect();
 					});
 				});
 			})();
