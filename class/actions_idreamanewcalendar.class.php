@@ -889,6 +889,7 @@ class ActionsIDreamANewCalendar
 						listYear:  { pointer: true },
 						timeGridWeek: {
 							pointer: true,
+							slotDuration: '00:30',
 							slotMinTime: '08:00',
 							slotMaxTime: '22:00'
 						},
@@ -898,8 +899,8 @@ class ActionsIDreamANewCalendar
 						resourceTimelineWeek: {
 							slotDuration: '00:15',
 							slotLabelInterval: '01:00',
-							slotMinTime: '09:00',
-							slotMaxTime: '21:00',
+							slotMinTime: '08:00',
+							slotMaxTime: '22:00',
 							slotWidth: 16,
 							resources: [{
 									id: 1,

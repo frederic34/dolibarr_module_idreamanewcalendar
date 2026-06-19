@@ -757,7 +757,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 			}, $actioncode);
 			$sql .= " AND ca.code IN (" . implode(',', $escapedCodes) . ")";
 		}
-		if (getDolGlobalInt('EVENT_CALENDAR_DONT_SHOW_AUTO_EVENTS') && strpos(implode(',', $actioncode), 'AC_OTH_AUTO') === false) {
+		if (getDolGlobalInt('IDREAMANEWCALENDAR_DONT_SHOW_AUTO_EVENTS') && strpos(implode(',', $actioncode), 'AC_OTH_AUTO') === false) {
 			// a.code au lieu de ca.code
 			$sql .= " AND ca.code != 'AC_OTH_AUTO'";
 			// avec a.code ça ne marche pas...
@@ -1198,7 +1198,7 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 
 /**
  * Returns true if the given hex color has a lightness below the configured threshold
- * (constant EVENT_CALENDAR_LIGTHNESS_SWAP, default 155 out of 255).
+ * (constant IDREAMANEWCALENDAR_LIGTHNESS_SWAP, default 155 out of 255).
  * Used to decide whether to use white or black text on a coloured event tile.
  *
  * @param string $color Hex color string with or without leading '#'
@@ -1209,7 +1209,7 @@ function isDarkColor($color)
 	if (empty($color)) {
 		return false;
 	}
-	$lightness_swap = getDolGlobalInt('EVENT_CALENDAR_LIGTHNESS_SWAP', 155);
+	$lightness_swap = getDolGlobalInt('IDREAMANEWCALENDAR_LIGTHNESS_SWAP', 155);
 
 	$rgb = HTMLToRGB($color);
 	$hsl = RGBToHSL($rgb);
