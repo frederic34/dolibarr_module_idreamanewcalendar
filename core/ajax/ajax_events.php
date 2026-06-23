@@ -1173,8 +1173,8 @@ function getEvents($resourceId, $calendarName, $startDate, $endDate, $offset, $o
 						'title' => html_entity_decode($icalevent->summary),
 						// body : The schedule body text which is text/plain
 						'body' => nl2br($icalevent->description),
-						'start' => $dtstart->format('Y-m-d H:i:sP'),
-						'end' => $dtend->format('Y-m-d H:i:sP'),
+						'start' => $fulldayevent ? $dtstart->format('Y-m-d') : $dtstart->format('Y-m-d H:i:sP'),
+						'end' => $fulldayevent ? $dtend->format('Y-m-d') : $dtend->format('Y-m-d H:i:sP'),
 						// icals are readonly
 						'startEditable' => false, 'durationEditable' => false,
 						'allDay' => $fulldayevent,
